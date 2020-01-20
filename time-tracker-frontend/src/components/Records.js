@@ -12,6 +12,7 @@ export default class Records extends Component {
             <th>Start Location</th>
             <th>Stop</th>
             <th>Stop Location</th>
+            <th>Duration</th>
           </tr>
         </thead>
         <tbody>
@@ -23,6 +24,7 @@ export default class Records extends Component {
               <td key={record.record_id}>{record.start_loc}</td>
               <td key={record.record_id}>{record.stop_time}</td>
               <td key={record.record_id}>{record.stop_loc}</td>
+              <td key={record.record_id}>{record.duration}</td>
             </React.Fragment>
           </tr>
         ))}
