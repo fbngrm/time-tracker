@@ -110,7 +110,8 @@ func (rs *timeRecordService) getRecords(ctx context.Context, w http.ResponseWrit
 	switch period {
 	case DAY:
 		// get the current day in the given location
-		day = t.In(loc)
+		currentYear, currentMonth, today := t.In(loc).Date()
+		day = time.Date(currentYear, currentMonth, today, 0, 0, 0, 0, loc)
 	case WEEK:
 		// get the first day of the week in the given location
 		isoYear, isoWeek := t.In(loc).ISOWeek()
