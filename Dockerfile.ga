@@ -5,5 +5,4 @@ RUN make -C ./gateway/ build
 
 FROM debian:stable-slim
 COPY --from=build /workspace/gateway/bin/gateway /bin/gateway
-COPY --from=build /workspace/gateway/config.yaml /config/config.yaml
 EXPOSE 8080 9102
