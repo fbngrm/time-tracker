@@ -40,6 +40,16 @@ func NewRecoverHandler() Middleware {
 	}
 }
 
+func NewCORSHandler() Middleware {
+	return func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With")
+			h.ServeHTTP(w, r)
+		})
+	}
+}
+
 // NewContextLog returns middleware that adds logger to request context.
 func NewContextLog(logger zerolog.Logger) []Middleware {
 	var mw []Middleware

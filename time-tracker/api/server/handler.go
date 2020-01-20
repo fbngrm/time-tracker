@@ -32,6 +32,7 @@ func newHandler(ts timeRecordStore, timeout time.Duration, logger zerolog.Logger
 	var mw []middleware.Middleware
 	mw = append(mw, middleware.NewRecoverHandler())
 	mw = append(mw, middleware.NewContextLog(logger)...)
+	mw = append(mw, middleware.NewCORSHandler())
 
 	// services handle http requests and hold a store to operate on a database
 	recordSrvc := middleware.Use(&timeRecordService{ts, timeout}, mw...)
@@ -42,7 +43,7 @@ func newHandler(ts timeRecordStore, timeout time.Duration, logger zerolog.Logger
 	// time record store
 	router.Handle("/record", recordSrvc).Methods("POST")
 	router.Handle("/records", recordSrvc).
-		Methods("GET").
+		Methods("GET", "OPTIONS").
 		Queries("user_id", "{id:[0-9]+}").
 		Queries("tz", "{tz:[A-Za-z]+/[A-Za-z]+}").
 		Queries("ts", "{ts:[0-9]+}").
