@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 
 	"github.com/PentoHQ/tech-challenge-time/gateway/config"
 	"github.com/gorilla/mux"
@@ -47,7 +48,7 @@ func newGatewayHandler(ctx context.Context, cfg *config.Config, logger zerolog.L
 			return nil, err
 		}
 		// relies on valid URL configuration; does not support query params
-		router.Handle(url.Path, Use(h, mw...)).Methods(url.Method)
+		router.Handle(url.Path, Use(h, mw...)).Methods(strings.Split(url.Method, ",")...)
 	}
 
 	// fixme, support queries in route configuration

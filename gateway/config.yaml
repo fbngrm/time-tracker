@@ -1,6 +1,6 @@
 urls:
   -
     path: "/record"
-    method: "POST, OPTIONS"
+    method: "POST,OPTIONS"
     http:
       host: "time-tracker:8080"
