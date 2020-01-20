@@ -1,9 +1,11 @@
-FROM golang:1 AS build
+FROM golang:1.13-alpine as build
+RUN apk update && apk add --no-cache git make
 COPY . /workspace
 WORKDIR /workspace
 RUN make -C ./gateway/ build
 
-FROM debian:stable-slim
+FROM alpine:latest
+RUN apk update && apk add --no-cache tzdata
 COPY --from=build /workspace/gateway/bin/gateway /bin/gateway
 COPY --from=build /workspace/gateway/config.yaml /config/config.yaml
 EXPOSE 8080 9102
