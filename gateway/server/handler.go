@@ -51,6 +51,7 @@ func newGatewayHandler(ctx context.Context, cfg *config.Config, logger zerolog.L
 		router.Handle(url.Path, Use(h, mw...)).Methods(strings.Split(url.Method, ",")...)
 	}
 
+	// ==============================================================
 	// fixme, support queries in route configuration
 	// note, this is a temporary hack since the current implmentation
 	// of config handling does not support query parameters. I would
@@ -76,6 +77,7 @@ func newGatewayHandler(ctx context.Context, cfg *config.Config, logger zerolog.L
 		Queries("tz", "{tz:[A-Za-z]+/[A-Za-z]+}").
 		Queries("ts", "{ts:[0-9]+}").
 		Queries("period", fmt.Sprintf("{period:(?:%s|%s|%s)}", DAY, WEEK, MONTH))
+	// ==============================================================
 
 	router.Handle("/ready", &ReadinessHandler{})
 	return router, nil
