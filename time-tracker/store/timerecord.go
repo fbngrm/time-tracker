@@ -58,14 +58,15 @@ func (ts *TimeRecordStore) Get(ctx context.Context, userID uint64, t time.Time) 
   SELECT
   	id,
 	name,
-	start_time,
+	start_time AT TIME ZONE tr.start_time_loc,
 	start_time_loc,
-	stop_time,
+	stop_time AT TIME ZONE tr.stop_time_loc,
 	stop_time_loc
   FROM time_records
-  WHERE user_id = $1
+  AS tr
+  WHERE tr.user_id = $1
   AND
-  stop_time >= $2;
+  tr.stop_time >= $2;
   `
 
 	db := ts.db.GetDB()
