@@ -1,0 +1,6 @@
+urls:
+  -
+    path: "/records/{id:[0-9]+}"
+    method: "GET"
+    http:
+      host: "time-tracker-srvc:8080"
