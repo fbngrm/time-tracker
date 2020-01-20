@@ -93,13 +93,28 @@ func newHandler(ctx context.Context, u config.URL, logger zerolog.Logger) (http.
 		// be applied if required. returns http.StatusBadGateway if backend is
 		// not reachable.
 		// TODO: add circuit-breaker
-		return httputil.NewSingleHostReverseProxy(&url.URL{
+		return sameHost(httputil.NewSingleHostReverseProxy(&url.URL{
 			Scheme: "http",
 			Host:   u.HTTP.Host,
-		}), nil
+		})), nil
 	default:
 		return nil, fmt.Errorf("no handler found for %s", p)
 	}
+}
+
+func sameHost(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Host = r.URL.Host
+		handler.ServeHTTP(w, r)
+	})
+}
+
+func addCORS(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With")
+		handler.ServeHTTP(w, r)
+	})
 }
 
 type Error struct {
