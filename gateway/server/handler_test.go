@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/heetch/FabianG-technical-test/gateway/config"
+	"github.com/PentoHQ/tech-challenge-time/gateway/config"
 	"github.com/rs/zerolog"
 )
 

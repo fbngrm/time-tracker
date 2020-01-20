@@ -49,6 +49,33 @@ func newGatewayHandler(ctx context.Context, cfg *config.Config, logger zerolog.L
 		// relies on valid URL configuration; does not support query params
 		router.Handle(url.Path, Use(h, mw...)).Methods(url.Method)
 	}
+
+	// fixme, support queries in route configuration
+	// note, this is a temporary hack since the current implmentation
+	// of config handling does not support query parameters. I would
+	// not deploy this in a production environment but don't have time
+	// to fix it during this coding challenge.
+	const (
+		DAY   = "day"
+		WEEK  = "week"
+		MONTH = "month"
+	)
+	u := config.URL{
+		HTTP: config.HTTPConf{
+			Host: "time-tracker:8080", // don't hardcode host value!
+		},
+	}
+	h, err := newHandler(ctx, u, logger)
+	if err != nil {
+		return nil, err
+	}
+	router.Handle("/records", Use(h, mw...)).
+		Methods("GET", "OPTIONS").
+		Queries("user_id", "{id:[0-9]+}").
+		Queries("tz", "{tz:[A-Za-z]+/[A-Za-z]+}").
+		Queries("ts", "{ts:[0-9]+}").
+		Queries("period", fmt.Sprintf("{period:(?:%s|%s|%s)}", DAY, WEEK, MONTH))
+
 	router.Handle("/ready", &ReadinessHandler{})
 	return router, nil
 }
