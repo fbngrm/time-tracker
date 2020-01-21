@@ -57,8 +57,10 @@ function recordsByPeriod(state = {}, action) {
       return state
   }
 }
+
 const rootReducer = combineReducers({
   recordsByPeriod,
   selectedPeriod
 })
+
 export default rootReducer
