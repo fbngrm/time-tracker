@@ -25,27 +25,30 @@ function requestRecords(period) {
   }
 }
 
-export const receiveRecords = (period, json) => ({
-  type: RECEIVE_RECORDS,
-  period,
-  records: json,
-  receivedAt: Date.now()
-})
-
-const fetchRecords = period => dispatch => {
-  dispatch(requestRecords(period))
-
-  const userID = 42
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  if (!Date.now) {
-    Date.now = function() { return new Date().getTime() }
+export function receiveRecords(period, json){
+  return {
+    type: RECEIVE_RECORDS,
+    period,
+    records: json,
+    receivedAt: Date.now()
   }
-  const timestamp = Math.floor(Date.now() / 1000)
-  const url = `http://localhost:8080/records?user_id=${userID}&ts=${timestamp}&tz=${timezone}&period=${period}`
-    console.log(url)
-  return fetch(url)
-    .then(response => response.json())
-    .then(json => dispatch(receiveRecords(period, json)))
+}
+
+function fetchRecords(period){
+  return dispatch => {
+    dispatch(requestRecords(period))
+
+    const userID = 42
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    if (!Date.now) {
+      Date.now = function() { return new Date().getTime() }
+    }
+    const timestamp = Math.floor(Date.now() / 1000)
+    const url = `http://localhost:8080/records?user_id=${userID}&ts=${timestamp}&tz=${timezone}&period=${period}`
+    return fetch(url)
+      .then(response => response.json())
+      .then(json => dispatch(receiveRecords(period, json)))
+  }
 }
 
 function shouldFetchRecords(state, period) {
