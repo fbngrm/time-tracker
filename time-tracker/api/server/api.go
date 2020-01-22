@@ -25,6 +25,11 @@ type timeRecordService struct {
 
 // ServeHTTP serves requests to the time record enpoint.
 func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// handle CORS preflight requests
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	ctx, cancel := context.WithTimeout(r.Context(), rs.timeout)
 	defer cancel()
 	// we attach the logger from the request to the context so we do not need
@@ -38,7 +43,7 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		decoder.DisallowUnknownFields() // catch unwanted fields
 		if err := decoder.Decode(&tr); err != nil {
-			writeError(w, r, err, http.StatusBadRequest)
+			writeError(w, r, err, http.StatusInternalServerError)
 			return
 		}
 		rs.createRecord(ctx, w, r, tr)
@@ -54,7 +59,6 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			writeError(w, r, errBadRequest, http.StatusBadRequest)
 			return
 		}
-
 		userID, err := strconv.ParseUint(uid, 10, 64) // mux validates type / how to test?
 		if err != nil {
 			writeError(w, r, errInternal, http.StatusInternalServerError)
@@ -91,7 +95,7 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			period = DAY
 		}
 
-		rs.getRecords(ctx, w, r, userID, t, loc, period)
+		rs.getRecords(ctx, w, r, userID, t.In(loc), loc, period)
 		return
 	}
 }
@@ -110,15 +114,15 @@ func (rs *timeRecordService) getRecords(ctx context.Context, w http.ResponseWrit
 	switch period {
 	case DAY:
 		// get the current day in the given location
-		currentYear, currentMonth, today := t.In(loc).Date()
+		currentYear, currentMonth, today := t.Date()
 		day = time.Date(currentYear, currentMonth, today, 0, 0, 0, 0, loc)
 	case WEEK:
 		// get the first day of the week in the given location
-		isoYear, isoWeek := t.In(loc).ISOWeek()
+		isoYear, isoWeek := t.ISOWeek()
 		day = firstDayOfISOWeek(isoYear, isoWeek, loc)
 	case MONTH:
 		// get the first day of the current month in the given location
-		currentYear, currentMonth, _ := t.In(loc).Date()
+		currentYear, currentMonth, _ := t.Date()
 		day = time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, loc)
 	default:
 		writeError(w, r, errNotFound, http.StatusNotFound)
