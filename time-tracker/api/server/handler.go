@@ -41,9 +41,9 @@ func newHandler(ts timeRecordStore, timeout time.Duration, logger zerolog.Logger
 	router.Handle("/ready", &readinessHandler{}).Methods("GET")
 
 	// time record store
-	router.Handle("/record", recordSrvc).Methods("POST")
+	router.Handle("/record", recordSrvc).Methods("POST", "OPTIONS")
 	router.Handle("/records", recordSrvc).
-		Methods("GET", "OPTIONS").
+		Methods("GET").
 		Queries("user_id", "{id:[0-9]+}").
 		Queries("tz", "{tz:[A-Za-z]+/[A-Za-z]+}").
 		Queries("ts", "{ts:[0-9]+}").
