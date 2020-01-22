@@ -9,7 +9,8 @@ CREATE TABLE time_records (
   start_time TIMESTAMP WITH TIME ZONE NOT NULL,
   start_time_loc varchar(50) NOT NULL,
   stop_time TIMESTAMP WITH TIME ZONE NOT NULL,
-  stop_time_loc varchar(50) NOT NULL
+  stop_time_loc varchar(50) NOT NULL,
+  duration BIGINT NOT NULL
 );
 
 INSERT INTO users(id) VALUES(42);
@@ -21,7 +22,8 @@ INSERT INTO
     start_time,
     start_time_loc,
     stop_time,
-    stop_time_loc
+    stop_time_loc,
+    duration
   )
 VALUES
   (
@@ -30,7 +32,8 @@ VALUES
     '2020-01-01 00:00:00+01', /* 1577833200 */
     'Europe/Berlin',
     '2020-01-01 01:00:00+01', /* 1577836800 */
-    'Europe/Berlin'
+    'Europe/Berlin',
+    3600
   ),
   (
     42,
@@ -38,5 +41,6 @@ VALUES
     '2020-01-20 00:00:00+01', /* 1579474800 */
     'Europe/Berlin',
     '2020-01-20 01:00:00+01', /* 1579478400 */
-    'Europe/Berlin'
+    'Europe/Berlin',
+    3600
   )
