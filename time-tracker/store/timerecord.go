@@ -84,7 +84,8 @@ func (ts *TimeRecordStore) Get(ctx context.Context, userID uint64, t time.Time) 
   AS tr
   WHERE tr.user_id = $1
   AND
-  tr.stop_time >= $2;
+  tr.stop_time >= $2
+  ORDER BY start_time DESC;
   `
 
 	db := ts.db.GetDB()
