@@ -46,6 +46,7 @@ type TimeStamp struct {
 	StartLoc string `json:"start_loc"`
 	Stop     int64  `json:"stop_time"` // seconds since UNIX epoch
 	StopLoc  string `json:"stop_loc"`
+	Duration int64  `json:"duration"`
 }
 
 // UnmarshalJSON unmarshals an offset naive timestamp with start and stop time
@@ -77,7 +78,7 @@ func (tr *TimeRecord) UnmarshalJSON(data []byte) error {
 	tr.StartLoc = ts.StartLoc
 	tr.Stop = stopInLoc
 	tr.StopLoc = ts.StopLoc
-	tr.Duration = ts.Stop - ts.Start
+	tr.Duration = ts.Duration
 
 	return nil
 }
