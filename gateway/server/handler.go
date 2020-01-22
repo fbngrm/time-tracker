@@ -71,8 +71,9 @@ func newGatewayHandler(ctx context.Context, cfg *config.Config, logger zerolog.L
 	if err != nil {
 		return nil, err
 	}
+	router.Handle("/record", Use(h, mw...)).Methods("POST", "OPTIONS")
 	router.Handle("/records", Use(h, mw...)).
-		Methods("GET", "OPTIONS").
+		Methods("GET").
 		Queries("user_id", "{id:[0-9]+}").
 		Queries("tz", "{tz:[A-Za-z]+/[A-Za-z]+}").
 		Queries("ts", "{ts:[0-9]+}").
