@@ -44,7 +44,8 @@ function records(
       return Object.assign({}, state, {
         isFetching: false,
         didInvalidate: false,
-        items: [action.record, ...state.items]
+        items: [action.record, ...state.items],
+        lastUpdated: action.receivedAt
       })
     default:
       return state

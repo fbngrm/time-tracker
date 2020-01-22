@@ -63,26 +63,29 @@ export default class Record extends Component {
   render() {
     let startButton = (!this.state.running && !this.state.saved)?
       <button onClick={this.startTimer}>start</button> :
-      null
+      <button onClick={this.startTimer} disabled="disabled">start</button>
     let stopButton = (this.state.running && !this.state.saved) ?
       <button onClick={this.stopTimer}>stop</button> :
-      null
+      <button onClick={this.stopTimer} disabled="disabled">stop</button> 
     let saveButton = (this.state.stopped && !this.state.saved )?
       <button onClick={this.saveTimer}>save</button> :
-      null
+      <button onClick={this.saveTimer} disabled="disabled">save</button>
 
     const { saved } = this.props
     let savedState = {saved} === true ? 'success' : 'failed'
 
     return (
       <div className="record">
+      <div className="record">
         <span>{this.name}</span>
         <span>{formatTime(this.state.startTime)}</span>
         <span>{formatTimer(Math.round(this.state.time/1000))}</span>
+      </div>
+      <div className="record">
         {startButton}
         {stopButton}
         {saveButton}
-        {savedState}
+      </div>
       </div>
     )
   }

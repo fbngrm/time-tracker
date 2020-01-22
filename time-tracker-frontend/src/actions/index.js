@@ -83,6 +83,7 @@ function savedRecord(id, json){
   return {
     type: SAVE_RECORD,
     record: json,
+    receivedAt: Date.now(),
     id
   }
 }

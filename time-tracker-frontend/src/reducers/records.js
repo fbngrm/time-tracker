@@ -1,6 +1,5 @@
 import {
-  ADD_RECORD,
-  SAVE_RECORD
+  ADD_RECORD
 } from '../actions'
 
 export default function records(state = [], action){
