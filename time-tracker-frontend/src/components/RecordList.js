@@ -7,21 +7,13 @@ export default class RecordList extends Component {
     const { records, saveRecord } = this.props
     return (
       <div>
-      <table>
-        <tbody>
         {records.map(record =>
-          <tr key={record.record_id}>
-            <React.Fragment>
-            <Record
-              {...record}
-              key={record.id}
-              onClick={saveRecord}
-            />
-            </React.Fragment>
-          </tr>
+          <Record
+            {...record}
+            key={record.id}
+            onClick={saveRecord}
+          />
         )}
-        </tbody>
-      </table>
       </div>
     )
   }

@@ -9,7 +9,7 @@ export default class Record extends Component {
     this.state = {
       time: 0,
       start: 0,
-      startTime: 0,
+      startTime: -1,
       startLoc: ""
     }
     this.startTimer = this.startTimer.bind(this)
@@ -18,13 +18,13 @@ export default class Record extends Component {
   }
 
   startTimer() {
-    var startTime = (this.state.startTime == 0) ? Date.now() : this.state.startTime
+    var startTime = (this.state.startTime === -1) ? Date.now() : this.state.startTime
     var startLoc = (this.state.startLoc === "") ? Intl.DateTimeFormat().resolvedOptions().timeZone : this.state.startLoc
     this.setState({
       time: this.state.time, // timer
       start: Date.now() - this.state.time, // set every time the timer is started/continued
       startTime: startTime, // set once on initial start
-      startLoc: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      startLoc: startLoc,
       running: true,
       stopped: false,
     })
@@ -72,36 +72,37 @@ export default class Record extends Component {
       null
 
     const { saved } = this.props
-    let savedState = {saved} ? 'success' : 'failed'
+    let savedState = {saved} === true ? 'success' : 'failed'
 
     return (
-      <div>
-        <td key={this.id}>{this.name}</td>
-        <td key={this.id}>{formatTime(this.state.startTime)}</td>
-        <td key={this.id}>{this.state.startLoc}</td>
-        <td key={this.id}>{formatTime(this.state.start + this.state.time)}</td>
-        <td key={this.id}>{this.state.stopLoc}</td>
-        <td key={this.id}>{formatTimer(Math.round(this.state.time/1000))}</td>
+      <div className="record">
+        <span>{this.name}</span>
+        <span>{formatTime(this.state.startTime)}</span>
+        <span>{formatTimer(Math.round(this.state.time/1000))}</span>
         {startButton}
         {stopButton}
         {saveButton}
+        {savedState}
       </div>
     )
   }
 }
 
 function formatTimer(t) {
-   var sec_num = parseInt(t, 10)
-   var hours   = Math.floor(sec_num / 3600)
-   var minutes = Math.floor((sec_num - (hours * 3600)) / 60)
-   var seconds = sec_num - (hours * 3600) - (minutes * 60)
-   if (hours   < 10) {hours   = "0"+hours}
-   if (minutes < 10) {minutes = "0"+minutes}
-   if (seconds < 10) {seconds = "0"+seconds}
-   return hours+':'+minutes+':'+seconds
+  var sec_num = parseInt(t, 10)
+  var hours   = Math.floor(sec_num / 3600)
+  var minutes = Math.floor((sec_num - (hours * 3600)) / 60)
+  var seconds = sec_num - (hours * 3600) - (minutes * 60)
+  if (hours   < 10) {hours   = "0"+hours}
+  if (minutes < 10) {minutes = "0"+minutes}
+  if (seconds < 10) {seconds = "0"+seconds}
+  return hours+':'+minutes+':'+seconds
 }
 
 function formatTime(t) {
+  if (t === -1) {
+    return ""
+  }
   var a = new Date(t);
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
   var year = a.getFullYear()

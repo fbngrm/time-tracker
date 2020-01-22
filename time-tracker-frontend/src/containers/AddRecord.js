@@ -18,7 +18,7 @@ class AddRecord extends Component {
         }}>
           <input ref={node => input = node} />
           <button type="submit">
-            Add Session
+            Add Record
           </button>
         </form>
       </div>

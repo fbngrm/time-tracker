@@ -19,12 +19,12 @@ export default class Records extends Component {
         {this.props.records.map((record, i) => (
           <tr key={record.record_id}>
             <React.Fragment>
-              <td key={record.record_id}>{record.name}</td>
-              <td key={record.record_id}>{record.start_time}</td>
-              <td key={record.record_id}>{record.start_loc}</td>
-              <td key={record.record_id}>{record.stop_time}</td>
-              <td key={record.record_id}>{record.stop_loc}</td>
-              <td key={record.record_id}>{record.duration}</td>
+              <td >{record.name}</td>
+              <td >{record.start_time}</td>
+              <td >{record.start_loc}</td>
+              <td >{record.stop_time}</td>
+              <td >{record.stop_loc}</td>
+              <td >{record.duration}</td>
             </React.Fragment>
           </tr>
         ))}

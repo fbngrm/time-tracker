@@ -2,7 +2,8 @@ import {
   SELECT_PERIOD,
   INVALIDATE_PERIOD,
   REQUEST_RECORDS,
-  RECEIVE_RECORDS
+  RECEIVE_RECORDS,
+  SAVE_RECORD
 } from '../actions'
 
 export function selectedPeriod(state = 'day', action) {
@@ -39,6 +40,12 @@ function records(
         items: action.records,
         lastUpdated: action.receivedAt
       })
+    case SAVE_RECORD:
+      return Object.assign({}, state, {
+        isFetching: false,
+        didInvalidate: false,
+        items: [action.record, ...state.items]
+      })
     default:
       return state
   }
@@ -52,6 +59,13 @@ export function recordsByPeriod(state = {}, action) {
       return Object.assign({}, state, {
         [action.period]: records(state[action.period], action)
       })
+    case SAVE_RECORD:
+      for (const period in state) {
+         state = Object.assign({}, state, {
+             [period]: records(state[period], action)
+           })
+         }
+        return state
     default:
       return state
   }
