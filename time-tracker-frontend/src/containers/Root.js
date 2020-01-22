@@ -11,9 +11,11 @@ export default class Root extends Component {
   render() {
     return (
       <Provider store={store}>
-        <AsyncApp />
+        <h2>Add Record</h2>
         <AddRecord />
         <VisibleRecordList />
+        <h2>Records</h2>
+        <AsyncApp />
       </Provider>
     )
   }

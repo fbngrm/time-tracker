@@ -6,16 +6,23 @@ export default class RecordList extends Component {
   render() {
     const { records, saveRecord } = this.props
     return (
-      <ul>
-        {records.map(todo =>
-          <Record
-            {...todo}
-            key={todo.id}
-            done={todo.done}
-            onClick={saveRecord}
-          />
+      <div>
+      <table>
+        <tbody>
+        {records.map(record =>
+          <tr key={record.record_id}>
+            <React.Fragment>
+            <Record
+              {...record}
+              key={record.id}
+              onClick={saveRecord}
+            />
+            </React.Fragment>
+          </tr>
         )}
-      </ul>
+        </tbody>
+      </table>
+      </div>
     )
   }
 }

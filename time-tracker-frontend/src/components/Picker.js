@@ -5,15 +5,15 @@ export default class Picker extends Component {
   render() {
     const { value, onChange, options } = this.props
     return (
-      <span>
-        <select onChange={e => onChange(e.target.value)} value={value}>
+      <div>
+        <select className="input-field col s12" onChange={e => onChange(e.target.value)} value={value}>
           {options.map(option => (
             <option value={option} key={option}>
               {option}
             </option>
           ))}
         </select>
-      </span>
+      </div>
     )
   }
 }

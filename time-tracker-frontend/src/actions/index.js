@@ -90,7 +90,7 @@ function savedRecord(id, json){
 function saveRecord(record){
   return dispatch => {
     // dispatch(requestRecords(period))
-    const { id, name, start, startLoc, stop, stopLoc } = record
+    const { id, name, start, startLoc, stop, stopLoc, duration } = record
     const url = `http://localhost:8080/record`
     return fetch(url,
        {
@@ -102,7 +102,8 @@ function saveRecord(record){
           start_time: start,
           start_loc: startLoc,
           stop_time: stop,
-          stop_loc: stopLoc
+          stop_loc: stopLoc,
+          duration: duration
         })
       })
       .then(response => response.json())
