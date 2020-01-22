@@ -29,8 +29,9 @@ func (ts *TimeRecordStore) Create(ctx context.Context, r TimeRecord) (*TimeRecor
 	start_time,
 	start_time_loc,
 	stop_time,
-	stop_time_loc)
-  VALUES($1,$2,$3,$4,$5,$6)
+	stop_time_loc,
+	duration)
+  VALUES($1,$2,$3,$4,$5,$6,$7)
   RETURNING
     id,
     user_id,
@@ -38,7 +39,8 @@ func (ts *TimeRecordStore) Create(ctx context.Context, r TimeRecord) (*TimeRecor
 	start_time AT TIME ZONE start_time_loc,
 	start_time_loc,
 	stop_time AT TIME ZONE stop_time_loc,
-	stop_time_loc
+	stop_time_loc,
+	duration
   `
 	db := ts.db.GetDB()
 	ctx, cancel := ts.db.RequestContext(ctx)
@@ -51,7 +53,8 @@ func (ts *TimeRecordStore) Create(ctx context.Context, r TimeRecord) (*TimeRecor
 		r.Start,
 		r.StartLoc,
 		r.Stop,
-		r.StopLoc).
+		r.StopLoc,
+		r.Duration).
 		Scan(
 			&tr.RecordID,
 			&tr.UserID,
@@ -59,7 +62,8 @@ func (ts *TimeRecordStore) Create(ctx context.Context, r TimeRecord) (*TimeRecor
 			&tr.Start,
 			&tr.StartLoc,
 			&tr.Stop,
-			&tr.StopLoc)
+			&tr.StopLoc,
+			&tr.Duration)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +78,8 @@ func (ts *TimeRecordStore) Get(ctx context.Context, userID uint64, t time.Time) 
 	start_time AT TIME ZONE tr.start_time_loc,
 	start_time_loc,
 	stop_time AT TIME ZONE tr.stop_time_loc,
-	stop_time_loc
+	stop_time_loc,
+	duration
   FROM time_records
   AS tr
   WHERE tr.user_id = $1
@@ -98,6 +103,7 @@ func (ts *TimeRecordStore) Get(ctx context.Context, userID uint64, t time.Time) 
 	var name string
 	var start, stop time.Time
 	var startLoc, stopLoc string
+	var duration int64
 	for rows.Next() {
 		if err := rows.Scan(
 			&id,
@@ -106,7 +112,7 @@ func (ts *TimeRecordStore) Get(ctx context.Context, userID uint64, t time.Time) 
 			&startLoc,
 			&stop,
 			&stopLoc,
-		); err != nil {
+			&duration); err != nil {
 			return nil, err
 		}
 		rec := TimeRecord{
@@ -117,6 +123,7 @@ func (ts *TimeRecordStore) Get(ctx context.Context, userID uint64, t time.Time) 
 			StartLoc: startLoc,
 			Stop:     stop,
 			StopLoc:  stopLoc,
+			Duration: duration,
 		}
 		recs = append(recs, rec)
 	}

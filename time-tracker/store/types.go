@@ -24,13 +24,14 @@ import (
 // In other words, it contains the start and stop time in an UTC-offset aware
 // format after conversion from the user's input.
 type TimeRecord struct {
-	RecordID uint64    `json:"record_id"`
-	UserID   uint64    `json:"user_id"`
-	Name     string    `json:"name"`
-	Start    time.Time `json:"start_time"` // time in the user's location
-	StartLoc string    `json:"start_loc"`
-	Stop     time.Time `json:"stop_time"` // time in the user's location
-	StopLoc  string    `json:"stop_loc"`
+	RecordID uint64
+	UserID   uint64
+	Name     string
+	Start    time.Time // time in the user's location
+	StartLoc string
+	Stop     time.Time // time in the user's location
+	StopLoc  string
+	Duration int64
 }
 
 // TimeStamp is a timezone naive representation of a time record.
@@ -76,6 +77,7 @@ func (tr *TimeRecord) UnmarshalJSON(data []byte) error {
 	tr.StartLoc = ts.StartLoc
 	tr.Stop = stopInLoc
 	tr.StopLoc = ts.StopLoc
+	tr.Duration = ts.Stop - ts.Start
 
 	return nil
 }
@@ -99,7 +101,7 @@ func (tr *TimeRecord) MarshalJSON() ([]byte, error) {
 		StartLoc: tr.StartLoc,
 		Stop:     tr.Stop.Format("02 Jan 2006 15:04:05"),
 		StopLoc:  tr.StopLoc,
-		Duration: formatDuration(tr.Stop.Sub(tr.Start)),
+		Duration: formatDuration(time.Second * time.Duration(tr.Duration)),
 	}
 	return json.Marshal(t)
 }
