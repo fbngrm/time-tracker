@@ -23,9 +23,22 @@ func New(db *database.DB) *TimeRecordStore {
 // the generated id.
 func (ts *TimeRecordStore) Create(ctx context.Context, r TimeRecord) (*TimeRecord, error) {
 	query := `
-  INSERT INTO time_records(user_id,name,start_time,start_time_loc,stop_time,stop_time_loc)
+  INSERT INTO time_records(
+    user_id,
+	name,
+	start_time,
+	start_time_loc,
+	stop_time,
+	stop_time_loc)
   VALUES($1,$2,$3,$4,$5,$6)
-  RETURNING *
+  RETURNING
+    id,
+    user_id,
+	name,
+	start_time AT TIME ZONE start_time_loc,
+	start_time_loc,
+	stop_time AT TIME ZONE stop_time_loc,
+	stop_time_loc
   `
 	db := ts.db.GetDB()
 	ctx, cancel := ts.db.RequestContext(ctx)
