@@ -1,10 +1,10 @@
 import { connect } from 'react-redux'
 import { saveRecordIfNeeded } from '../actions'
-import RecordList from '../components/RecordList'
+import Timer from '../components/Timer'
 
 function mapStateToProps(state){
   return {
-    records: state.records
+    record: state.record
   }
 }
 
@@ -19,4 +19,4 @@ function mapDispatchToProps(dispatch){
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(RecordList)
+)(Timer)

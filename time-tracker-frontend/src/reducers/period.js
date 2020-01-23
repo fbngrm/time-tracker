@@ -42,7 +42,6 @@ function records(
       })
     case SAVE_RECORD:
       return Object.assign({}, state, {
-        isFetching: false,
         didInvalidate: false,
         items: [action.record, ...state.items],
         lastUpdated: action.receivedAt

@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux'
 import { recordsByPeriod, selectedPeriod } from './period'
-import records from './records'
+import timer from './timer'
 
 const rootReducer = combineReducers({
   recordsByPeriod,
   selectedPeriod,
-  records
+  timer
 })
 
 export default rootReducer
