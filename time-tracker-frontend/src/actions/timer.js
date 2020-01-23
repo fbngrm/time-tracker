@@ -3,6 +3,7 @@ export const ADD_TIMER = 'ADD_TIMER'
 export const START_TIMER = 'START_TIMER'
 export const STOP_TIMER = 'STOP_TIMER'
 export const SAVE_TIMER = 'SAVE_TIMER'
+export const RESET_TIMER = 'RESET_TIMER'
 export const SAVE_RECORD = 'SAVE_RECORD'
 
 export function addTimer(name) {
@@ -19,9 +20,9 @@ export function addTimer(name) {
 export function startTimer(state){
   return {
     type: START_TIMER,
-    time: state.time, // timer
-    start: Date.now() - state.time, // set every time the timer is started/continued
-    startedAt: (state.startedAt === -1) ? Date.now() : state.startedAt, // set initial start time once
+    time: state.time,
+    start: Math.floor(Date.now() / 1000),
+    startedAt: (state.startedAt === -1) ? Math.floor(Date.now() / 1000) : state.startedAt, // set initial start time once
     startLoc: (state.startLoc === "") ? Intl.DateTimeFormat().resolvedOptions().timeZone : state.startLoc, // set initial start time once
     isRunning: true,
     isStopped: false
@@ -29,7 +30,7 @@ export function startTimer(state){
 }
 
 export function stopTimer(state){
-  const now = Date.now()
+  const now = Math.floor(Date.now() / 1000)
   return {
     type: STOP_TIMER,
     isRunning: false,
@@ -47,6 +48,12 @@ export function saveTimer(state){
   }
 }
 
+export function resetTimer(){
+  return {
+    type: RESET_TIMER
+  }
+}
+
 export function saveTimerIfNeeded(state) {
   return (dispatch) => {
     if (!state.isSaving) {
@@ -58,7 +65,8 @@ export function saveTimerIfNeeded(state) {
 function saveRecord(json){
   return {
     type: SAVE_RECORD,
-    record: json
+    record: json,
+    receivedAt: Date.now()
   }
 }
 
@@ -74,14 +82,15 @@ function save(state){
         body: JSON.stringify({
           user_id: 42,
           name: name,
-          start_time: Math.round(startedAt / 1000), // seconds since unix epoch,
+          start_time: startedAt, // seconds since unix epoch,
           start_loc: startLoc,
-          stop_time: Math.round(stoppedAt / 1000), // seconds since unix epoch,
+          stop_time :stoppedAt, // seconds since unix epoch,
           stop_loc: stopLoc,
-          duration: Math.round(time / 1000) // seconds
+          duration:time // seconds
         })
       })
       .then(response => response.json())
       .then(json => dispatch(saveRecord(json)))
+      .then(dispatch(resetTimer()))
   }
 }

@@ -5,47 +5,56 @@ export default class AddTimer extends Component {
   constructor(props){
     super(props)
     this.state = {
-      start: props.start,
+      start: 0,
       time: 0
     }
     this.startTimer = this.startTimer.bind(this)
     this.stopTimer = this.stopTimer.bind(this)
     this.saveTimer = this.saveTimer.bind(this)
   }
+
   startTimer() {
-    this.props.startTimer(this.props.timer)
+    this.setState({
+      time: this.state.time, // timer
+      start: Math.floor(Date.now() / 1000) - this.state.time // set every time the timer is started/continued
+    })
     this.timer = setInterval(() => this.setState({
-      time: Date.now() - this.state.start
-    }), 1)
+      time: Math.floor(Date.now() / 1000) - this.state.start
+    }), 1000)
+    this.props.startTimer(this.props.timer)
   }
+
   stopTimer() {
     this.props.stopTimer(this.props.timer)
     clearInterval(this.timer)
   }
+
   saveTimer() {
+    this.setState({
+      time: 0,
+      start: 0
+    })
     this.props.saveTimer(this.props.timer)
   }
 
   render() {
-    const { addTimer, saveTimer, running, stopped, saved } = this.props
+    const { addTimer, saveTimer, timer } = this.props
+
     let input
 
-    let startButton = (true)?
+    let startButton = (!timer.isRunning && timer.startedAt !== undefined) ?
       <button onClick={this.startTimer}>start</button> :
       <button disabled="disabled">start</button>
 
-    let stopButton = (true) ?
+    let stopButton = (timer.isRunning) ?
       <button onClick={this.stopTimer}>stop</button> :
       <button disabled="disabled">stop</button> 
 
-    let saveButton = (true)?
+    let saveButton = (timer.isStopped) ?
       <button onClick={this.saveTimer}>save</button> :
       <button disabled="disabled">save</button>
 
-    const { timer } = this.props
-    // if (timer === undefined) {
-    //     return null
-    // }
+    let visibleTimer = (timer.startedAt === undefined) ? 'hide' : ''
 
     return (
       <div>
@@ -67,11 +76,12 @@ export default class AddTimer extends Component {
             {saveButton}
           </form>
         </div>
-        <div className="record">
+        <p className={visibleTimer}>
           <span>{timer.name}</span>
           <span>{formatTime(timer.startedAt)}</span>
-          <span>{formatTimer(Math.round(this.state.time/1000))}</span>
-        </div>
+          <span>{formatTime(timer.stoppedAt)}</span>
+          <span>{formatTimer(this.state.time)}</span>
+        </p>
       </div>
     )
   }
@@ -91,7 +101,7 @@ function formatTimer(t) {
 
 function formatTime(t) {
   if (t === -1) return ""
-  var a = new Date(t);
+  var a = new Date(t*1000);
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
   var year = a.getFullYear()
   var month = months[a.getMonth()]
