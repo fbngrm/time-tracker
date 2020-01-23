@@ -88,7 +88,6 @@ export default class AddTimer extends Component {
 }
 
 function formatTimer(t) {
-  if (t === 0) return ""
   var sec_num = parseInt(t, 10)
   var hours   = Math.floor(sec_num / 3600)
   var minutes = Math.floor((sec_num - (hours * 3600)) / 60)
