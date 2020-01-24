@@ -15,14 +15,6 @@ import (
 	"github.com/PentoHQ/tech-challenge-time/time-tracker/store"
 )
 
-var (
-	startCreateTest time.Time
-	stopCreateTest  time.Time
-)
-
-func init() {
-}
-
 // uses the user id to get the test data.
 type mockTimeRecordStore struct{}
 
