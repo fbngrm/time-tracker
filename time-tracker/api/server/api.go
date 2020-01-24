@@ -13,7 +13,7 @@ import (
 
 // timeRecordStore handles operations on time records.
 type timeRecordStore interface {
-	Create(context.Context, store.TimeRecord) (*store.TimeRecord, error)
+	Create(ctx context.Context, r store.TimeRecord) (*store.TimeRecord, error)
 	Get(ctx context.Context, userID uint64, t time.Time) ([]store.TimeRecord, error)
 }
 
@@ -64,7 +64,6 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			writeError(w, r, errInternal, http.StatusInternalServerError)
 			return
 		}
-
 		// get the timestamp from the requests params
 		// if not supplied, we consider the request as malformed
 		ts := q.Get("ts")
@@ -98,6 +97,8 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		rs.getRecords(ctx, w, r, userID, t.In(loc), loc, period)
 		return
 	}
+	writeError(w, r, errNotFound, http.StatusNotFound)
+	return
 }
 
 func (rs *timeRecordService) createRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, tr store.TimeRecord) {
