@@ -14,31 +14,33 @@ export default class AddTimer extends Component {
   }
 
   startTimer() {
+    this.props.startTimer(this.props.timer)
     this.setState({
       time: this.state.time, // timer
-      start: Math.floor(Date.now() / 1000) - this.state.time // set every time the timer is started/continued
+      start: Date.now() - this.state.time // set every time the timer is started/continued
     })
+    // note, we needed to track the offset of millisecond to
+    // have a precise time the store state is precise though
     this.timer = setInterval(() => this.setState({
-      time: Math.floor(Date.now() / 1000) - this.state.start
-    }), 1000)
-    this.props.startTimer(this.props.timer)
+      time: Date.now() - this.state.start
+    }), 1)
   }
 
   stopTimer() {
-    this.props.stopTimer(this.props.timer)
     clearInterval(this.timer)
+    this.props.stopTimer(this.props.timer)
   }
 
   saveTimer() {
+    this.props.saveTimer(this.props.timer)
     this.setState({
       time: 0,
       start: 0
     })
-    this.props.saveTimer(this.props.timer)
   }
 
   render() {
-    const { addTimer, saveTimer, timer } = this.props
+    const { addTimer, timer } = this.props
 
     let input
 
@@ -80,7 +82,7 @@ export default class AddTimer extends Component {
           <span>{timer.name}</span>
           <span>{formatTime(timer.startedAt)}</span>
           <span>{formatTime(timer.stoppedAt)}</span>
-          <span>{formatTimer(this.state.time)}</span>
+          <span>{formatTimer(Math.floor(this.state.time/1000))}</span>
         </p>
       </div>
     )
@@ -100,7 +102,7 @@ function formatTimer(t) {
 
 function formatTime(t) {
   if (t === -1) return ""
-  var a = new Date(t*1000);
+  var a = new Date(t);
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
   var year = a.getFullYear()
   var month = months[a.getMonth()]
