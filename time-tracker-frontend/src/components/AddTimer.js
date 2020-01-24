@@ -19,8 +19,6 @@ export default class AddTimer extends Component {
       time: this.state.time, // timer
       start: Date.now() - this.state.time // set every time the timer is started/continued
     })
-    // note, we needed to track the offset of millisecond to
-    // have a precise time the store state is precise though
     this.timer = setInterval(() => this.setState({
       time: Date.now() - this.state.start
     }), 1)
@@ -80,8 +78,12 @@ export default class AddTimer extends Component {
         </div>
         <p className={visibleTimer}>
           <span>{timer.name}</span>
+        {timer.startedAt > 0 && (
           <span>{formatTime(timer.startedAt)}</span>
+        )}
+        {timer.stoppededAt > 0 && (
           <span>{formatTime(timer.stoppedAt)}</span>
+        )}
           <span>{formatTimer(Math.floor(this.state.time/1000))}</span>
           <span>{timer.error}</span>
         </p>
