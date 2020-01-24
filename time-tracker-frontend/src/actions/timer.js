@@ -5,6 +5,7 @@ export const STOP_TIMER = 'STOP_TIMER'
 export const SAVE_TIMER = 'SAVE_TIMER'
 export const RESET_TIMER = 'RESET_TIMER'
 export const SAVE_RECORD = 'SAVE_RECORD'
+export const SAVE_TIMER_FAIL = 'SAVE_TIMER_FAIL'
 
 export function addTimer(name) {
   return {
@@ -21,8 +22,8 @@ export function startTimer(state){
   return {
     type: START_TIMER,
     time: state.time,
-    start: Math.floor(Date.now() / 1000),
-    startedAt: (state.startedAt === -1) ? Math.floor(Date.now() / 1000) : state.startedAt, // set initial start time once
+    start: Date.now(),
+    startedAt: (state.startedAt === -1) ? Date.now() : state.startedAt, // set initial start time once
     startLoc: (state.startLoc === "") ? Intl.DateTimeFormat().resolvedOptions().timeZone : state.startLoc, // set initial start time once
     isRunning: true,
     isStopped: false
@@ -30,7 +31,7 @@ export function startTimer(state){
 }
 
 export function stopTimer(state){
-  const now = Math.floor(Date.now() / 1000)
+  const now = Date.now()
   return {
     type: STOP_TIMER,
     isRunning: false,
@@ -82,11 +83,11 @@ function save(state){
         body: JSON.stringify({
           user_id: 42,
           name: name,
-          start_time: startedAt, // seconds since unix epoch,
+          start_time: Math.floor(startedAt / 1000), // seconds since unix epoch,
           start_loc: startLoc,
-          stop_time :stoppedAt, // seconds since unix epoch,
+          stop_time: Math.floor(stoppedAt / 1000), // seconds since unix epoch,
           stop_loc: stopLoc,
-          duration:time // seconds
+          duration: Math.floor(time / 1000) // seconds
         })
       })
       .then(response => response.json())
