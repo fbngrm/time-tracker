@@ -10,20 +10,13 @@ import (
 var testURLs = []string{
 	`urls:
   -
-    path: "/drivers/{id:[0-9]+}/locations"
-    method: "PATCH"
-    nsq:
-      topic: "locations"
-      dest_tcp_addr:
-          - "127.0.0.1:4150"
-  -
-    path: "/drivers/{id:[0-9]+}"
+    path: "/foo/{id:[0-9]+}"
     method: "GET"
     http:
-      host: "zombie-driver"`, // first case; two urls
+      host: "foo"`, // first case; two urls
 	`urls:
   -
-    path: "/drivers/{id:[0-9]+}"
+    path: "/foo/{id:[0-9]+}"
     method: "GET"`, // second case; one url; missing protocol
 }
 
@@ -40,27 +33,15 @@ var cfgtests = []struct {
 	want []res  // expected result
 }{
 	{
-		d:  "expect config to contain 2 URLs",
+		d:  "expect config to contain 1 URLs",
 		in: testURLs[0],
 		want: []res{
 			res{
 				u: URL{
-					Path:   "/drivers/{id:[0-9]+}/locations",
-					Method: "PATCH",
-					NSQ: NSQConf{
-						Topic:    "locations",
-						TCPAddrs: []string{"127.0.0.1:4150"},
-					},
-				},
-				p: NSQ,
-				e: nil,
-			},
-			res{
-				u: URL{
-					Path:   "/drivers/{id:[0-9]+}",
+					Path:   "/foo/{id:[0-9]+}",
 					Method: "GET",
 					HTTP: HTTPConf{
-						Host: "zombie-driver",
+						Host: "foo",
 					},
 				},
 				p: HTTP,
@@ -74,7 +55,7 @@ var cfgtests = []struct {
 		want: []res{
 			res{
 				u: URL{
-					Path:   "/drivers/{id:[0-9]+}",
+					Path:   "/foo/{id:[0-9]+}",
 					Method: "GET",
 				},
 				e: errors.New("URL is missing protocol"),
