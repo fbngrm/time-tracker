@@ -90,8 +90,28 @@ function save(state){
           duration: Math.floor(time / 1000) // seconds
         })
       })
-      .then(response => response.json())
-      .then(json => dispatch(saveRecord(json)))
-      .then(dispatch(resetTimer()))
-  }
+      // Try to parse the response
+      .then(response =>
+        response.json().then(json => ({
+          status: response.status,
+          json
+        })
+      ))
+      .then(
+        // Both fetching and parsing succeeded!
+        ({ status, json }) => {
+          if (status >= 400) {
+            // Status looks bad
+            dispatch({type: SAVE_TIMER_FAIL, err: {json}})
+          } else {
+            // Status looks good
+            dispatch(saveRecord(json))
+            dispatch(resetTimer())
+          }
+        },
+        err => { // Either fetching or parsing failed!
+          dispatch({type: SAVE_TIMER_FAIL, err: err})
+        }
+      )
+    }
 }
