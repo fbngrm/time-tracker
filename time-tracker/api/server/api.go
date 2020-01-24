@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"path"
 	"strconv"
@@ -59,7 +60,7 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			writeError(w, r, errBadRequest, http.StatusBadRequest)
 			return
 		}
-		userID, err := strconv.ParseUint(uid, 10, 64) // mux validates type / how to test?
+		userID, err := strconv.ParseUint(uid, 10, 64) // mux validates type
 		if err != nil {
 			writeError(w, r, errInternal, http.StatusInternalServerError)
 			return
@@ -71,7 +72,7 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			writeError(w, r, err, http.StatusBadRequest)
 			return
 		}
-		timestamp, err := strconv.ParseInt(ts, 10, 64) // mux validates type / how to test?
+		timestamp, err := strconv.ParseInt(ts, 10, 64) // mux validates type
 		if err != nil {
 			writeError(w, r, errInternal, http.StatusInternalServerError)
 			return
@@ -111,6 +112,20 @@ func (rs *timeRecordService) createRecord(ctx context.Context, w http.ResponseWr
 }
 
 func (rs *timeRecordService) getRecords(ctx context.Context, w http.ResponseWriter, r *http.Request, userID uint64, t time.Time, loc *time.Location, period string) {
+	day, err := getStartOfPeriod(t, loc, period)
+	if err != nil {
+		writeError(w, r, err, http.StatusInternalServerError)
+		return
+	}
+	recs, err := rs.Get(ctx, userID, day)
+	if err != nil {
+		writeError(w, r, err, http.StatusInternalServerError)
+		return
+	}
+	encodeJSON(w, r, recs, http.StatusOK)
+}
+
+func getStartOfPeriod(t time.Time, loc *time.Location, period string) (time.Time, error) {
 	var day time.Time
 	switch period {
 	case DAY:
@@ -126,16 +141,9 @@ func (rs *timeRecordService) getRecords(ctx context.Context, w http.ResponseWrit
 		currentYear, currentMonth, _ := t.Date()
 		day = time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, loc)
 	default:
-		writeError(w, r, errNotFound, http.StatusNotFound)
-		return
+		return time.Now(), fmt.Errorf("unknown period: %s", period)
 	}
-
-	recs, err := rs.Get(ctx, userID, day)
-	if err != nil {
-		writeError(w, r, err, http.StatusInternalServerError)
-		return
-	}
-	encodeJSON(w, r, recs, http.StatusOK)
+	return day, nil
 }
 
 // O(n)
