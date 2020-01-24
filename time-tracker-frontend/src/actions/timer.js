@@ -98,19 +98,18 @@ function save(state){
         })
       ))
       .then(
-        // Both fetching and parsing succeeded!
+        // Both fetching and parsing succeeded
         ({ status, json }) => {
           if (status >= 400) {
-            // Status looks bad
-            dispatch({type: SAVE_TIMER_FAIL, err: {json}})
+            dispatch({type: SAVE_TIMER_FAIL, err: "error: status code "+status})
           } else {
-            // Status looks good
             dispatch(saveRecord(json))
             dispatch(resetTimer())
           }
         },
-        err => { // Either fetching or parsing failed!
-          dispatch({type: SAVE_TIMER_FAIL, err: err})
+        // Either fetching or parsing failed!
+        err => {
+          dispatch({type: SAVE_TIMER_FAIL, err: err.message})
         }
       )
     }

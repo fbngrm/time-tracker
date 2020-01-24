@@ -3,7 +3,8 @@ import {
   START_TIMER,
   STOP_TIMER,
   SAVE_TIMER,
-  RESET_TIMER,
+  SAVE_TIMER_FAIL,
+  RESET_TIMER
 } from '../actions'
 
 export default function timer(state = {}, action){
@@ -39,6 +40,11 @@ export default function timer(state = {}, action){
       })
     case RESET_TIMER:
       return {}
+    case SAVE_TIMER_FAIL:
+      return Object.assign({}, state, {
+        error: action.err,
+        isSaving: false
+      })
     default:
       return state
   }

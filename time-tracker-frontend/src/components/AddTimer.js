@@ -83,6 +83,7 @@ export default class AddTimer extends Component {
           <span>{formatTime(timer.startedAt)}</span>
           <span>{formatTime(timer.stoppedAt)}</span>
           <span>{formatTimer(Math.floor(this.state.time/1000))}</span>
+          <span>{timer.error}</span>
         </p>
       </div>
     )
