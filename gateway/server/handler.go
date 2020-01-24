@@ -73,7 +73,7 @@ func newGatewayHandler(ctx context.Context, cfg *config.Config, logger zerolog.L
 	}
 	router.Handle("/record", Use(h, mw...)).Methods("POST", "OPTIONS")
 	router.Handle("/records", Use(h, mw...)).
-		Methods("GET").
+		Methods("GET", "OPTIONS").
 		Queries("user_id", "{id:[0-9]+}").
 		Queries("tz", "{tz:[A-Za-z]+/[A-Za-z]+}").
 		Queries("ts", "{ts:[0-9]+}").
@@ -109,14 +109,6 @@ func newHandler(ctx context.Context, u config.URL, logger zerolog.Logger) (http.
 func sameHost(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.Host = r.URL.Host
-		handler.ServeHTTP(w, r)
-	})
-}
-
-func addCORS(handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With")
 		handler.ServeHTTP(w, r)
 	})
 }
