@@ -114,7 +114,7 @@ func TestServeHTTPCreate(t *testing.T) {
 }
 
 type params struct {
-	u  string // user id
+	u  string // user id - used as the test case id in the mock store
 	ts string // timestamp
 	tz string // timezone
 	p  string // period
@@ -153,8 +153,15 @@ var getRecordTests = map[uint64]struct {
 		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errInternal.Error())),
 		p: params{u: "1", ts: "invalid"},
 	},
+	3: { // 500
+		d: "expect store error to result in 500",
+		e: errInternal,
+		s: http.StatusInternalServerError,
+		p: params{u: "3", ts: "0"}, // timzone and location can be empty
+		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errInternal.Error())),
+	},
 	// success
-	3: { // 200
+	4: { // 200
 		d: "expect successfull request",
 		s: http.StatusOK,
 		p: params{u: "1", ts: "0"}, // timzone and location can be empty
