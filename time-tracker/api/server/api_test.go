@@ -29,16 +29,15 @@ func (rs *mockTimeRecordStore) Create(ctx context.Context, r store.TimeRecord) (
 	return &tr, createRecordTests[r.UserID].e
 }
 func (rs *mockTimeRecordStore) Get(ctx context.Context, userID uint64, t time.Time) ([]store.TimeRecord, error) {
-	// return getRecordTests[userID].r, getRecordTests[userID].e
-	return nil, nil
+	return make([]store.TimeRecord, 1), getRecordTests[userID].e
 }
 
-// test cases indexed by id
+// test cases indexed by user id
 var createRecordTests = map[uint64]struct {
 	d string // description of test case
 	e error  // mock store error
+	u string // route of test request
 	p string // request payload
-	u string // route of the test request
 	s int    // expected http status code
 	b []byte // expected payload
 }{
@@ -73,14 +72,6 @@ var createRecordTests = map[uint64]struct {
 		s: http.StatusOK,
 		b: []byte(`{"record_id":3,"user_id":3,"name":"foo","start_time":"01 Jan 2020 00:00:00","start_loc":"Europe/Berlin","stop":"01 Jan 2020 01:00:00","stop_loc":"Europe/Berlin", "duration":"01:00:00"}`),
 	},
-}
-
-func getDateFromString(t *testing.T, date string) time.Time {
-	ti, err := time.Parse(time.RFC3339, date)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return ti
 }
 
 func TestServeHTTPCreate(t *testing.T) {
@@ -122,179 +113,98 @@ func TestServeHTTPCreate(t *testing.T) {
 	}
 }
 
-// // test cases indexed by player id
-// var updateTests = map[uint64]struct {
-// 	d string        // description of test case
-// 	r *store.Player // mock store response
-// 	e error         // mock store error
-// 	u string        // request url path
-// 	p string        // request payload
-// 	s int           // expected http status code
-// 	b []byte        // expected payload
-// }{
-// 	// url path errors
-// 	0: { // 500
-// 		d: "expect malformed JSON payload to result in 500 when updating player",
-// 		u: "players/update",
-// 		p: `{"player_id":1`,
-// 		s: http.StatusInternalServerError,
-// 		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errInternal.Error())),
-// 	},
-// 	// store errors
-// 	1: { // 500
-// 		d: "expect store error to result in 500 when updating player",
-// 		e: errInternal,
-// 		u: "players/update",
-// 		p: `{"player_id":1}`,
-// 		s: http.StatusInternalServerError,
-// 		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errInternal.Error())),
-// 	},
-// 	// success
-// 	2: { // 200
-// 		d: "expect player's store to get updated and status get set to benched",
-// 		u: "players/update",
-// 		r: &store.Player{
-// 			PlayerID:  2,
-// 			RosterID:  0,
-// 			FirstName: "foo",
-// 			LastName:  "bar",
-// 			Alias:     "foobar",
-// 			Status:    "benched",
-// 		},
-// 		p: `{"player_id":2,"roster_id":1,"first_name":"foo","last_name":"bar","alias":"foobar","status":"active"}`,
-// 		s: http.StatusOK,
-// 		b: []byte(`{"player_id":2,"roster_id":0,"first_name":"foo","last_name":"bar","alias":"foobar","status":"benched"}`),
-// 	},
+type params struct {
+	u  string // user id
+	ts string // timestamp
+	tz string // timezone
+	p  string // period
+}
+
+// var mockResults = map[string]map[string][]store.TimeRecord{
+// 	"UTC":               {"day": make([]store.TimeRecord, 1)},
+// 	"Europe/Berlin":     {"week": make([]store.TimeRecord, 1)},
+// 	"Europe/Copenhagen": {"month": make([]store.TimeRecord, 1)},
 // }
 
-// func TestUpdate(t *testing.T) {
-// 	// service initialized with a mock store to
-// 	// control the data and errors we return
-// 	ps := &playerService{
-// 		&mockPlayerStore{},
-// 		200 * time.Millisecond,
-// 	}
+// test cases indexed by user id
+var getRecordTests = map[uint64]struct {
+	d string             // description of test case
+	r []store.TimeRecord // mock store response
+	e error              // mock store error
+	s int                // expected http status code
+	b []byte             // expected payload
+	p params             // request params
+}{
+	// errors
+	0: { // 400
+		d: "expect missing user id to result in 400",
+		s: http.StatusBadRequest,
+		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errBadRequest.Error())),
+	},
+	1: { // 400
+		d: "expect missing timestamp to result in 400",
+		s: http.StatusBadRequest,
+		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errBadRequest.Error())),
+		p: params{u: "1"},
+	},
+	2: { // 500
+		d: "expect wrong timezone to result in 500",
+		s: http.StatusInternalServerError,
+		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errInternal.Error())),
+		p: params{u: "1", ts: "invalid"},
+	},
+	// success
+	3: { // 200
+		d: "expect successfull request",
+		s: http.StatusOK,
+		p: params{u: "1", ts: "0"}, // timzone and location can be empty
+		r: make([]store.TimeRecord, 1),
+	},
+}
 
-// 	router := mux.NewRouter()
-// 	router.Handle("/players/update", ps).Methods("PATCH")
+func TestServeHTTPGet(t *testing.T) {
+	// service initialized with a mock store to
+	// control the data and errors we return
+	rs := &timeRecordService{
+		&mockTimeRecordStore{},
+		200 * time.Millisecond,
+	}
+	// test server
+	s := httptest.NewServer(rs)
+	defer s.Close()
+	c := s.Client()
 
-// 	s := httptest.NewServer(router)
-// 	defer s.Close()
-// 	c := s.Client()
+	for _, tc := range getRecordTests {
+		tt := tc
+		t.Run(tt.d, func(t *testing.T) {
+			req, err := http.NewRequest("GET", fmt.Sprintf("%s/records", s.URL), nil)
+			if err != nil {
+				t.Fatalf("unexpected err: %v", err)
+			}
+			// set query string
+			q := req.URL.Query()
+			q.Add("user_id", tt.p.u)
+			q.Add("ts", tt.p.ts)
+			q.Add("tz", tt.p.tz)
+			q.Add("period", tt.p.p)
+			req.URL.RawQuery = q.Encode()
 
-// 	for _, tc := range updateTests {
-// 		tt := tc
-// 		t.Run(tt.d, func(t *testing.T) {
-// 			req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s", s.URL, tt.u), strings.NewReader(tt.p))
-// 			if err != nil {
-// 				t.Fatalf("unexpected err: %v", err)
-// 			}
-// 			resp, err := c.Do(req)
-// 			if err != nil {
-// 				t.Fatalf("unexpected err: %v", err)
-// 			}
-// 			// expected result
-// 			if want, got := tt.s, resp.StatusCode; want != got {
-// 				t.Errorf("want status code %d got %d", want, got)
-// 			}
-// 			body, err := ioutil.ReadAll(resp.Body)
-// 			if err != nil {
-// 				t.Fatalf("unexpected err: %v", err)
-// 			}
-// 			resp.Body.Close()
-// 			if want, got := tt.b, body; bytes.Compare(want, got) == 1 {
-// 				t.Errorf("want response\n%+s\ngot\n%+s", want, got)
-// 			}
-// 		})
-// 	}
-// }
-
-// // test cases indexed by player id
-// var changeTests = map[uint64]struct {
-// 	d string              // description of test case
-// 	r *store.PlayerChange // mock store response
-// 	e error               // mock store error
-// 	u string              // request url path
-// 	p string              // request payload
-// 	s int                 // expected HTTP status code
-// 	b []byte              // expected payload
-// }{
-// 	// url path errors
-// 	0: { // 500
-// 		d: "expect malformed JSON payload to result in 500 when updating player",
-// 		u: "players/change",
-// 		p: `{"player_id":1`,
-// 		s: http.StatusInternalServerError,
-// 		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errInternal.Error())),
-// 	},
-// 	// store errors
-// 	1: { // 500
-// 		d: "expect store error to result in 500 when updating player",
-// 		e: errInternal,
-// 		u: "players/change",
-// 		s: http.StatusInternalServerError,
-// 		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errInternal.Error())),
-// 	},
-// 	// success
-// 	2: { // 200
-// 		d: "expect players statuses to get swapped",
-// 		u: "players/change",
-// 		r: &store.PlayerChange{
-// 			Active: store.Player{
-// 				PlayerID: 2,
-// 				RosterID: 0,
-// 				Status:   "benched",
-// 			},
-// 			Benched: store.Player{
-// 				PlayerID: 3,
-// 				RosterID: 0,
-// 				Status:   "active",
-// 			},
-// 		},
-// 		p: `{"active":{"player_id":2,"roster_id":0,"status":"active"},"benched":{"player_id":3,"roster_id":0,"status":"benched"}}`,
-// 		s: http.StatusOK,
-// 		b: []byte(`{"active":{"player_id":2,"roster_id":0,"first_name":"","last_name":"","alias":"","status":"benched"},"benched":{"player_id":3,"roster_id":0,"first_name":"","last_name":"","alias":"","status":"acti`),
-// 	},
-// }
-
-// func TestChange(t *testing.T) {
-// 	// service initialized with a mock store to
-// 	// control the data and errors we return
-// 	ps := &playerService{
-// 		&mockPlayerStore{},
-// 		200 * time.Millisecond,
-// 	}
-
-// 	router := mux.NewRouter()
-// 	router.Handle("/players/change", ps).Methods("PATCH")
-
-// 	s := httptest.NewServer(router)
-// 	defer s.Close()
-// 	c := s.Client()
-
-// 	for _, tc := range changeTests {
-// 		tt := tc
-// 		t.Run(tt.d, func(t *testing.T) {
-// 			req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s", s.URL, tt.u), strings.NewReader(tt.p))
-// 			if err != nil {
-// 				t.Fatalf("unexpected err: %v", err)
-// 			}
-// 			resp, err := c.Do(req)
-// 			if err != nil {
-// 				t.Fatalf("unexpected err: %v", err)
-// 			}
-// 			// expected result
-// 			if want, got := tt.s, resp.StatusCode; want != got {
-// 				t.Errorf("want status code %d got %d", want, got)
-// 			}
-// 			body, err := ioutil.ReadAll(resp.Body)
-// 			if err != nil {
-// 				t.Fatalf("unexpected err: %v", err)
-// 			}
-// 			resp.Body.Close()
-// 			if want, got := tt.b, body; bytes.Compare(want, got) == 1 {
-// 				t.Errorf("want response\n%+s\ngot\n%+s", want, got)
-// 			}
-// 		})
-// 	}
-// }
+			resp, err := c.Do(req)
+			if err != nil {
+				t.Fatalf("unexpected err: %v", err)
+			}
+			// expected result
+			if want, got := tt.s, resp.StatusCode; want != got {
+				t.Errorf("want status code %d got %d", want, got)
+			}
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				t.Fatalf("unexpected err: %v", err)
+			}
+			resp.Body.Close()
+			if want, got := tt.b, body; bytes.Compare(want, got) == 1 {
+				t.Errorf("want response\n%+s\ngot\n%+s", want, got)
+			}
+		})
+	}
+}
