@@ -82,6 +82,9 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// get the tz-database zone name from the requests params
 		// if not supplied, we assume UTC
 		zone := q.Get("tz")
+		if len(zone) == 0 {
+			zone = "UTC"
+		}
 		loc, err := time.LoadLocation(zone)
 		if err != nil {
 			writeError(w, r, err, http.StatusBadRequest)
