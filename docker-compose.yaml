@@ -22,24 +22,7 @@ services:
       TIME_REC_DB_DSN: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable" # store this in a secret and enable SSL
     depends_on:
       - db
-    expose:
-      - "8080"
-    restart: on-failure
-    command: /bin/time-tracker
-
-  gateway:
-    build:
-      context: .
-      dockerfile: Dockerfile.ga
-    depends_on:
-      - time-tracker
-    environment:
-      HTTP_ADDR: ":8080"
-      METRICS_ADDR: ":9102"
     ports:
       - "8080:8080"
-    expose:
-      - "9102"
     restart: on-failure
-    command: /bin/gateway --cfg-file=/config/config.yaml
-
+    command: /bin/time-tracker
