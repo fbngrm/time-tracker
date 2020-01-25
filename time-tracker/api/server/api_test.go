@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -120,12 +121,6 @@ type params struct {
 	p  string // period
 }
 
-// var mockResults = map[string]map[string][]store.TimeRecord{
-// 	"UTC":               {"day": make([]store.TimeRecord, 1)},
-// 	"Europe/Berlin":     {"week": make([]store.TimeRecord, 1)},
-// 	"Europe/Copenhagen": {"month": make([]store.TimeRecord, 1)},
-// }
-
 // test cases indexed by user id
 var getRecordTests = map[uint64]struct {
 	d string             // description of test case
@@ -213,5 +208,92 @@ func TestServeHTTPGet(t *testing.T) {
 				t.Errorf("want response\n%+s\ngot\n%+s", want, got)
 			}
 		})
+	}
+}
+
+var startPeriodTests = []struct {
+	d  string         // description of test case
+	t  time.Time      // param t
+	l  *time.Location // param loc
+	p  string         // param period
+	tr time.Time      // expected result
+	e  error          // expected error
+}{
+	// error
+	{
+		d:  "expecting error due to invalid period",
+		t:  time.Now(),
+		l:  nil,
+		p:  "invalid",
+		tr: time.Now(),
+		e:  errors.New("unknown period: invalid"),
+	},
+	// success - day
+	{
+		d:  "expecting same date when passing first day of week",
+		t:  time.Date(2020, time.January, 01, 0, 0, 0, 0, time.UTC),
+		l:  time.UTC,
+		p:  "day",
+		tr: time.Date(2020, time.January, 01, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		d:  "expecting start midnight when passing a later time on the same day",
+		t:  time.Date(2020, time.January, 01, 03, 30, 10, 2, time.UTC),
+		l:  time.UTC,
+		p:  "day",
+		tr: time.Date(2020, time.January, 01, 0, 0, 0, 0, time.UTC),
+	},
+	// success - week
+	{
+		d:  "expecting correct date when passing first day of week",
+		t:  time.Date(2019, time.December, 30, 0, 0, 0, 0, time.UTC),
+		l:  time.UTC,
+		p:  "week",
+		tr: time.Date(2019, time.December, 30, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		d:  "expecting correct date when passing third day of week",
+		t:  time.Date(2020, time.January, 01, 0, 0, 0, 0, time.UTC),
+		l:  time.UTC,
+		p:  "week",
+		tr: time.Date(2019, time.December, 30, 0, 0, 0, 0, time.UTC),
+	},
+	// success - month
+	{
+		d:  "expecting correct date when passing first day of month",
+		t:  time.Date(2020, time.January, 01, 0, 0, 0, 0, time.UTC),
+		l:  time.UTC,
+		p:  "month",
+		tr: time.Date(2020, time.January, 01, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		d:  "expecting correct date when passing last day of month",
+		t:  time.Date(2020, time.January, 31, 0, 0, 0, 0, time.UTC),
+		l:  time.UTC,
+		p:  "month",
+		tr: time.Date(2020, time.January, 01, 0, 0, 0, 0, time.UTC),
+	},
+}
+
+func TestGetStartOfPeriod(t *testing.T) {
+	for _, tc := range startPeriodTests {
+		gotT, gotErr := getStartOfPeriod(tc.t, tc.l, tc.p)
+		// unexpected errors
+		if gotErr != nil && tc.e == nil {
+			t.Fatalf("unexpected err: %v", gotErr)
+		}
+		// expected errors
+		if gotErr == nil && tc.e != nil {
+			t.Fatalf("expected err: %v", tc.e)
+		}
+		if gotErr != nil && tc.e != nil {
+			if got, want := gotErr.Error(), tc.e.Error(); got != want {
+				t.Errorf("want err\n%+v\ngot\n%+v", want, got)
+			}
+			continue
+		}
+		if got, want := gotT, tc.tr; got != want {
+			t.Errorf("want time\n%+v\ngot\n%+v", want, got)
+		}
 	}
 }
