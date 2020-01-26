@@ -31,11 +31,10 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-
-	// attach the logger from the request to the context so we do not need
-	// to pass it as an parameter
 	ctx, cancel := context.WithTimeout(r.Context(), rs.timeout)
 	defer cancel()
+	// we attach the logger from the request to the context so we do not need
+	// to pass it as an parameter
 	ctx = loggerFromRequest(r).WithContext(ctx)
 
 	_, route := path.Split(r.URL.Path)
@@ -54,7 +53,7 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "records":
 		q := r.URL.Query()
 
-		// get the user id from the request params
+		// get the user id from the requests params
 		// if not supplied, we consider the request as malformed
 		uid := q.Get("user_id")
 		if len(uid) == 0 {
@@ -66,7 +65,6 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			writeError(w, r, errInternal, http.StatusInternalServerError)
 			return
 		}
-
 		// get the timestamp from the requests params
 		// if not supplied, we consider the request as malformed
 		ts := q.Get("ts")
@@ -84,9 +82,6 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// get the tz-database zone name from the requests params
 		// if not supplied, we assume UTC
 		zone := q.Get("tz")
-		if len(zone) == 0 {
-			zone = "UTC"
-		}
 		loc, err := time.LoadLocation(zone)
 		if err != nil {
 			writeError(w, r, err, http.StatusBadRequest)
@@ -104,9 +99,9 @@ func (rs *timeRecordService) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeError(w, r, errNotFound, http.StatusNotFound)
+	return
 }
 
-// createRecord delegates the call to the timeRecordStore and returns the result.
 func (rs *timeRecordService) createRecord(ctx context.Context, w http.ResponseWriter, r *http.Request, tr store.TimeRecord) {
 	rec, err := rs.Create(ctx, tr)
 	if err != nil {
@@ -116,7 +111,6 @@ func (rs *timeRecordService) createRecord(ctx context.Context, w http.ResponseWr
 	encodeJSON(w, r, rec, http.StatusOK)
 }
 
-// getRecords delegates the call to the timeRecordStore and returns the result.
 func (rs *timeRecordService) getRecords(ctx context.Context, w http.ResponseWriter, r *http.Request, userID uint64, t time.Time, loc *time.Location, period string) {
 	day, err := getStartOfPeriod(t, loc, period)
 	if err != nil {
@@ -131,8 +125,6 @@ func (rs *timeRecordService) getRecords(ctx context.Context, w http.ResponseWrit
 	encodeJSON(w, r, recs, http.StatusOK)
 }
 
-// getStartOfPeriod returns a time representing the start of the first day in
-// the given period.
 func getStartOfPeriod(t time.Time, loc *time.Location, period string) (time.Time, error) {
 	var day time.Time
 	switch period {
@@ -154,21 +146,21 @@ func getStartOfPeriod(t time.Time, loc *time.Location, period string) (time.Time
 	return day, nil
 }
 
-// firstDayOfISOWeek returns the first day of the given week in the given year
-// in the given timezone.
+// O(n)
 func firstDayOfISOWeek(year int, week int, timezone *time.Location) time.Time {
 	date := time.Date(year, 0, 0, 0, 0, 0, 0, timezone)
 	isoYear, isoWeek := date.ISOWeek()
 	for date.Weekday() != time.Monday { // iterate back to Monday
 		date = date.AddDate(0, 0, -1)
-		isoYear, _ = date.ISOWeek()
+		isoYear, isoWeek = date.ISOWeek()
 	}
 	for isoYear < year { // iterate forward to the first day of the first week
 		date = date.AddDate(0, 0, 1)
-		_, isoWeek = date.ISOWeek()
+		isoYear, isoWeek = date.ISOWeek()
 	}
 	for isoWeek < week { // iterate forward to the first day of the given week
 		date = date.AddDate(0, 0, 1)
+		isoYear, isoWeek = date.ISOWeek()
 	}
 	return date
 }
