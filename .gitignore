@@ -32,3 +32,4 @@ tags
 bin/
 secrets/
 /.env
+var/
