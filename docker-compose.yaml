@@ -34,8 +34,10 @@ services:
       context: .
       dockerfile: Dockerfile.ng
     container_name: webserver
-    restart: unless-stopped
+    restart: on-failure
     tty: true
+    depends_on:
+      - time-tracker
     ports:
       - "80:80"
     networks:
