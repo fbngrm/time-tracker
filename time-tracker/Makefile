@@ -1,15 +1,12 @@
-.PHONY: all build run test test-race test-cover lint curltime
+.PHONY: all build test test-race test-cover lint
 
-all: run
+all: build
 
 build:
 	mkdir -p bin
 	go build -o bin/time-tracker \
 		-ldflags "-X main.version=$${VERSION:-$$(git describe --tags --always --dirty)}" \
         ./cmd/time-tracker/main.go
-
-run:
-	docker-compose up
 
 test:
 	go test -v -timeout=1m ./...
