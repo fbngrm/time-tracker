@@ -7,7 +7,6 @@ import (
 	"github.com/PentoHQ/tech-challenge-time/time-tracker/database"
 )
 
-// TimeRecordStore table of the encapsulated datastore.
 type TimeRecordStore struct {
 	db *database.DB
 }
