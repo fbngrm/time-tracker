@@ -125,6 +125,7 @@ func (rs *timeRecordService) getRecords(ctx context.Context, w http.ResponseWrit
 	encodeJSON(w, r, recs, http.StatusOK)
 }
 
+// getStartOfPeriod returns the start or the first day in the given period.
 func getStartOfPeriod(t time.Time, loc *time.Location, period string) (time.Time, error) {
 	var day time.Time
 	switch period {
@@ -146,7 +147,8 @@ func getStartOfPeriod(t time.Time, loc *time.Location, period string) (time.Time
 	return day, nil
 }
 
-// O(n)
+// firstDayOfISOWeek returns the first day of the given week in the given year
+// at the given location.
 func firstDayOfISOWeek(year int, week int, timezone *time.Location) time.Time {
 	date := time.Date(year, 0, 0, 0, 0, 0, 0, timezone)
 	isoYear, isoWeek := date.ISOWeek()
@@ -160,7 +162,6 @@ func firstDayOfISOWeek(year int, week int, timezone *time.Location) time.Time {
 	}
 	for isoWeek < week { // iterate forward to the first day of the given week
 		date = date.AddDate(0, 0, 1)
-		isoYear, isoWeek = date.ISOWeek()
 	}
 	return date
 }
