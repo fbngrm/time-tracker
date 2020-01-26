@@ -41,7 +41,8 @@ class AsyncApp extends Component {
   }
 
   render() {
-    const { selectedPeriod, records, isFetching, lastUpdated } = this.props
+      console.log(this.props)
+    const { selectedPeriod, records, isFetching, lastUpdated, error } = this.props
     return (
       <div>
         <Picker
@@ -59,8 +60,9 @@ class AsyncApp extends Component {
             <button onClick={this.handleRefreshClick}>Refresh</button>
           )}
         </p>
-        {isFetching && records.length === 0 && <h2>Loading...</h2>}
-        {!isFetching && records.length === 0 && <h2>Empty.</h2>}
+        {error !== undefined && <h2>{error}</h2>}
+        {error === undefined && isFetching && records.length === 0 && <h2>Loading...</h2>}
+        {error === undefined && !isFetching && records.length === 0 && <h2>Empty.</h2>}
         {records.length > 0 && (
           <div style={{ opacity: isFetching ? 0.5 : 1 }}>
             <Records records={records} />
@@ -81,7 +83,7 @@ AsyncApp.propTypes = {
 
 function mapStateToProps(state) {
   const { selectedPeriod, recordsByPeriod } = state
-  const { isFetching, lastUpdated, items: records } = recordsByPeriod[
+  const { isFetching, lastUpdated, error, items: records } = recordsByPeriod[
     selectedPeriod
   ] || {
     isFetching: true,
@@ -91,7 +93,8 @@ function mapStateToProps(state) {
     selectedPeriod,
     records,
     isFetching,
-    lastUpdated
+    lastUpdated,
+    error
   }
 }
 export default connect(mapStateToProps)(AsyncApp)

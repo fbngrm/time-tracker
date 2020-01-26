@@ -75,7 +75,7 @@ function save(state){
   return dispatch => {
     dispatch(saveTimer)
     const { name, startedAt, startLoc, stoppedAt, stopLoc, time } = state
-    const url = `http://localhost:8080/record`
+    const url = `http://localhost/time-tracker/record`
     return fetch(url,
        {
         method: 'POST',

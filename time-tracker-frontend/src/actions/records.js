@@ -42,7 +42,7 @@ function fetchRecords(period){
     const userID = 42
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const timestamp = Math.floor(Date.now() / 1000)
-    const url = `http://localhost:8080/records?user_id=${userID}&ts=${timestamp}&tz=${timezone}&period=${period}`
+    const url = `http://localhost/time-tracker/records?user_id=${userID}&ts=${timestamp}&tz=${timezone}&period=${period}`
     return fetch(url)
       // Try to parse the response
       .then(response =>
@@ -55,14 +55,14 @@ function fetchRecords(period){
         // Both fetching and parsing succeeded
         ({ status, json }) => {
           if (status >= 400) {
-            dispatch({type: FETCH_RECORDS_FAIL, err: "error: status code "+status})
+            dispatch({type: FETCH_RECORDS_FAIL, err: "error: status code "+status, period: period, receivedAt: Date.now()})
           } else {
             dispatch(receiveRecords(period, json))
           }
         },
         // Either fetching or parsing failed!
         err => {
-          dispatch({type: FETCH_RECORDS_FAIL, err: err.message})
+          dispatch({type: FETCH_RECORDS_FAIL, err: err.message, period: period, receivedAt: Date.now(), records: []})
         }
       )
     }
