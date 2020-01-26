@@ -11,7 +11,7 @@ import (
 var locs = make(map[string]*time.Location)
 
 func initLoc(t *testing.T, loc string) {
-	// get the start time in the users location
+	// get the start time in the given location
 	l, err := time.LoadLocation(loc)
 	if err != nil {
 		t.Fatal(err)
@@ -88,8 +88,6 @@ type marshalTest struct {
 }
 
 func TestMarshall(t *testing.T) {
-	initLoc(t, "Europe/London")
-	initLoc(t, "Asia/Tokyo")
 	marhsalTests := []marshalTest{
 		marshalTest{
 			out: []byte(`{"record_id":0,"user_id":3,"name":"foo","start_time":"31 Dec 2019 23:00:00","start_loc":"Europe/London","stop_time":"01 Jan 2020 00:00:00","stop_loc":"Europe/London","duration":"01:00:00"}`),
