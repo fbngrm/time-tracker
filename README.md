@@ -22,7 +22,7 @@ Theoretically, it was also possible to store future dates in a safe way without 
 Against the widespread believe that it is true to store dates in UTC format to be a bulletproof method, this is not true for storing future dates.
 
 ### Setup
-This section assumes there is a go, make and git installation available on the system.
+This section assumes there is a go, make, Docker and git installation available on the system.
 A Makefile is located at the project root which should be used to test, build and run the program.
 
 ### Build
@@ -56,7 +56,7 @@ make lint
 ## Architecture
 The program consists of three services.
 Services run in a Docker container, exposed by a gateway service which is reachable from the outside world.
-For details on the setup the [docker-compose]() file.
+For details on the setup the [docker-compose](https://github.com/fbngrm/time-tracker/blob/master/docker-compose.yaml) file.
 
 ### Database
 A postgres database is used to store the time records for user sessions.
@@ -70,13 +70,14 @@ Binaries use the latest git commit hash or tag as a version.
 
 #### API Endpoints
 
-`GET /records?user_id=42&tz=Europe/Berlin&ts=1579688104&period=week
+`GET /records?user_id=42&tz=Europe/Berlin&ts=1579688104&period=week`
 
 **Query parameters**
-- user_id: [0-9]+ - the user ID, currenlty hardcoded to 42
-- tz: [A-Za-z]+/[A-Za-z]+ - the user's time zone name according to the IANA zoneinfo definition
-- ts: [0-9]+ - timestamp as number of seconds since UNIX epoch
-- period: day|week|month - the time period of requested records
+
+- `user_id: [0-9]+` - the user ID, currently hardcoded to 42
+- `tz: [A-Za-z]+/[A-Za-z]+` - the user's time zone name according to the IANA zoneinfo definition
+- `ts: [0-9]+` - timestamp as number of seconds since UNIX epoch
+- `period: day|week|month` - the time period of requested records
 
 **Response**
 ```json
@@ -94,11 +95,13 @@ Binaries use the latest git commit hash or tag as a version.
 
 **Role:**
 
-During a typical day, thousands of drivers send their coordinates every 5 seconds to this endpoint.
+Fetch a list of records for a certain user for the current day, week or month.
 
 **Behaviour**
 
-Coordinates received on this endpoint are converted to [NSQ](https://github.com/nsqio/nsq) messages listened by the `Driver Location` service.
+The provided timestamp and timezone are used to convert the time in the users location.
+The start of the first day for the provided period is calculated as the start time.
+A list of all time records with a stop date past the start time is returned.
 
 ---
 
