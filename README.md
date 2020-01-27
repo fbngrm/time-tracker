@@ -31,7 +31,7 @@ make build # builds all services
 ```
 
 ### Run
-Serve the frontend `localhost`:
+Serve the frontend on `localhost`:
 ```
 make build
 make run # starts all services
