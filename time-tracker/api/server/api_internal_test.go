@@ -237,7 +237,7 @@ var startPeriodTests = []struct {
 		tr: time.Date(2020, time.January, 01, 0, 0, 0, 0, time.UTC),
 	},
 	{
-		d:  "expecting start midnight when passing a later time on the same day",
+		d:  "expecting start time midnight when passing a later time on the same day",
 		t:  time.Date(2020, time.January, 01, 03, 30, 10, 2, time.UTC),
 		l:  time.UTC,
 		p:  "day",
