@@ -83,7 +83,8 @@ Binaries use the latest git commit hash or tag as a version.
 	"stop_time": 1579965816,
 	"stop_loc": "Europe/Copenhagen",
 	"duration": 3600
-}```
+}
+```
 
 **Response**
 
@@ -97,7 +98,8 @@ Binaries use the latest git commit hash or tag as a version.
 	"stop_time": "25 Jan 2020 16:23:36",
 	"stop_loc": "Europe/Copenhagen",
 	"duration": "01:00:00"
-}```
+}
+```
 
 **Role:**
 
