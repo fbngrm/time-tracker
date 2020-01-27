@@ -32,6 +32,7 @@ make build # builds all services
 ```
 
 ### Run
+Serve the frontend `localhost`:
 ```
 make build
 make run # starts all services
@@ -157,6 +158,10 @@ An nginx gateway is responsible for serving the frontend as well as providing pu
 Requests to the public endpoints are forwarded to the backend service.
 
 #### Public API Endpoints
+
+`GET /`
+
+Serves the frontend.
 
 `POST /time-tracker/record`
 
