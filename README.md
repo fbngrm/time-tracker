@@ -108,8 +108,8 @@ Persist a time record of a user session in the database.
 **Behaviour**
 
 The provided timestamps and timezones are used to get the start and stop times in the provided locations.
-The time record is stored in the datastore which returns the records ID.
-A JSON representation of record with the generated ID and formatted times and duration is returned.
+The time record is stored in the datastore which returns the record's ID.
+A JSON representation of the record with the generated ID and formatted times and duration is returned.
 
 ---
 
@@ -149,11 +149,11 @@ A list of JSON representations of all time records with a stop date past the sta
 ---
 
 ### Frontend
-A react/redux frontend provides the user interface to store and view time records.
+A react/redux frontend provides the user interface to interact with the backend API.
 Builds of the frontend are created during the build of the gateway service and are served as static files.
 
 ### Gatweay
-An nginx gateway is responsible for serving the frontend as well as providing public API enpoints.
+A nginx gateway is responsible for serving the frontend as well as providing public API enpoints.
 Requests to the public endpoints are forwarded to the backend service.
 
 #### Public API Endpoints
