@@ -133,7 +133,7 @@ A JSON representation of record with the generated ID and formatted times and du
 	"stop_time": "27 Jan 2020 00:13:40",
 	"stop_loc": "Europe/Berlin",
 	"duration": "00:00:12"
-}]
+}, ...]
 ```
 
 **Role:**
@@ -161,8 +161,6 @@ Requests to the public endpoints are forwarded to the backend service.
 `POST /time-tracker/record`
 
 Forwarded to the private `/record` endpoint.
-
----
 
 `GET /time-tracker/records`
 
