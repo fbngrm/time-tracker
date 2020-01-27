@@ -8,9 +8,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/PentoHQ/tech-challenge-time/time-tracker/api/server"
-	"github.com/PentoHQ/tech-challenge-time/time-tracker/database"
-	"github.com/PentoHQ/tech-challenge-time/time-tracker/store"
+	"github.com/fgrimme/time-tracker/time-tracker/api/server"
+	"github.com/fgrimme/time-tracker/time-tracker/database"
+	"github.com/fgrimme/time-tracker/time-tracker/store"
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
 	kingpin "gopkg.in/alecthomas/kingpin.v2"

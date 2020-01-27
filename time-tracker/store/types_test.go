@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/PentoHQ/tech-challenge-time/time-tracker/store"
+	"github.com/fgrimme/time-tracker/time-tracker/store"
 )
 
 var locs = make(map[string]*time.Location)

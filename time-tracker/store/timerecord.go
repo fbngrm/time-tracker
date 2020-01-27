@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/PentoHQ/tech-challenge-time/time-tracker/database"
+	"github.com/fgrimme/time-tracker/time-tracker/database"
 )
 
 type TimeRecordStore struct {

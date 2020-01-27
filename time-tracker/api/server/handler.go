@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/PentoHQ/tech-challenge-time/time-tracker/api"
-	"github.com/PentoHQ/tech-challenge-time/time-tracker/middleware"
+	"github.com/fgrimme/time-tracker/time-tracker/api"
+	"github.com/fgrimme/time-tracker/time-tracker/middleware"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/hlog"

@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/PentoHQ/tech-challenge-time/time-tracker/store"
+	"github.com/fgrimme/time-tracker/time-tracker/store"
 )
 
 // timeRecordStore handles operations on time records.
