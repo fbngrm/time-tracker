@@ -19,7 +19,6 @@ By doing all time conversions and zone calculations in a central location, we ca
 For more information about the tz-database/zoneinfo on UNIX systems, see: https://www.iana.org/time-zones
 
 Theoretically, it was also possible to store future dates in a safe way without being affected by future, yet unknown, changes in timezone conversion rules.
-Against the widespread believe that it is safe to store dates in UTC format to be a bulletproof method, this is not true for storing future dates.
 
 ### Setup
 This section assumes there is a go, make, Docker and git installation available on the system.
