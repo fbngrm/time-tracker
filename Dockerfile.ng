@@ -2,7 +2,7 @@ FROM node AS build
 
 COPY . /workspace
 WORKDIR /workspace
-RUN cd time-tracker-frontend && npm run-script build
+RUN cd time-tracker-frontend && npm install && npm run-script build
 
 FROM nginx:latest
 COPY --from=build /workspace/time-tracker-frontend/build/ /var/www
