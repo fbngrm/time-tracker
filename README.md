@@ -11,9 +11,9 @@ Note, sessions must be saved to survive the reboot of the system.
 ## Storing time records
 User input is provided as a timestamp of seconds since UNIX epoch and a tz-database location name.
 The program does not rely on the user's timezone database and converts provided timestamps to the user's location before operating on or persisting them.
-This is due to the possiblity that a user's timezone database is not up-to-date and thus delievers dates with a wrong UTC-offset.
+This is due to the possibility that a user's timezone database is not up-to-date and thus delivers dates with a wrong UTC-offset.
 
-E.g. if the European Union decides to abondon daylight saving time, the database on the user's system may not be updated in time while she starts or stops a session and reports a wrong offset.
+E.g. the European Union decides to abandon daylight saving time, the database on the user's system may not be updated in time while she starts or stops a session and reports a wrong offset.
 
 By doing all time conversions and zone calculations in a central location, we can control the timezone database and guarantee correct conversions.
 For more information about the tz-database/zoneinfo on UNIX systems, see: https://www.iana.org/time-zones
@@ -60,7 +60,7 @@ For details on the setup the [docker-compose](https://github.com/fbngrm/time-tra
 
 ### Database
 A postgres database is used to store the time records for user sessions.
-The schema is initialized on startup by the scipt in the `initdb` directory.
+The schema is initialized on startup by the script in the `initdb` directory.
 Four records are pre-populated on start-up as examples.
 
 ### Backend
@@ -153,8 +153,8 @@ A react/redux frontend provides the user interface to store and view time record
 Builds of the frontend are created during the build of the gateway service and are served as static files.
 
 ### Gatweay
-An nginx gateway is responsible for servig the frontend as well as providing public API enpoints.
-Requests to the public enpoints are forwarded to the backend service.
+An nginx gateway is responsible for serving the frontend as well as providing public API enpoints.
+Requests to the public endpoints are forwarded to the backend service.
 
 #### Public API Endpoints
 
@@ -167,8 +167,6 @@ Forwarded to the private `/record` endpoint.
 `GET /time-tracker/records`
 
 Forwarded to the private `/records` endpoint.
-
----
 
 ## Dependency management
 The program makes use of the standard library wherever possible.
