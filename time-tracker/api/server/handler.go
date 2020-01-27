@@ -27,20 +27,19 @@ const (
 	MONTH = "month"
 )
 
-// newHandler creates an HTTP handler that operates on time records.
+// newHandler creates a HTTP handler that operates on time records.
 func newHandler(ts timeRecordStore, timeout time.Duration, logger zerolog.Logger) (http.Handler, error) {
 	var mw []middleware.Middleware
 	mw = append(mw, middleware.NewRecoverHandler())
 	mw = append(mw, middleware.NewContextLog(logger)...)
 	mw = append(mw, middleware.NewCORSHandler())
 
-	// service that handles HTTP requests and hold a store to operate on a database
+	// service that handles HTTP requests and holds a store to operate on a database
 	recordSrvc := middleware.Use(&timeRecordService{ts, timeout}, mw...)
 
 	router := mux.NewRouter()
 	router.Handle("/ready", &readinessHandler{}).Methods("GET")
 
-	// time record store
 	router.Handle("/record", recordSrvc).Methods("POST", "OPTIONS")
 	router.Handle("/records", recordSrvc).
 		Methods("GET", "OPTIONS").

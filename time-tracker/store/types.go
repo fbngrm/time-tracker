@@ -9,10 +9,10 @@ import (
 // User input must always be a timestamp of seconds since UNIX epoch and a
 // tz-database location name. We do not trust the user's timezone database and
 // convert provided timestamps to the user's location before operating on them.
-// This is due to the possiblity that a user's timezone database is not up-to-date
-// and thus delievers dates with a wrong UTC-offset.
+// This is due to the possibility that a user's timezone database is not up-to-date
+// and thus delivers dates with a wrong UTC-offset.
 //
-// E.g. if the European Union decides to abondon daylight saving time, the databse
+// E.g. if the European Union decides to abandon daylight saving time, the database
 // on the user's system may not be updated in time.
 // By doing all time conversions and zone calculations in a central location,
 // we can control the timezone database and guarantee correct conversions.
