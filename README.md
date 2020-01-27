@@ -13,7 +13,7 @@ User input is provided as a timestamp of seconds since UNIX epoch and a tz-datab
 The program does not rely on the user's timezone database and converts provided timestamps to the user's location before operating on or persisting them.
 This is due to the possibility that a user's timezone database is not up-to-date and thus delivers dates with a wrong UTC-offset.
 
-E.g. the European Union decides to abandon daylight saving time, the database on the user's system may not be updated in time while she starts or stops a session and reports a wrong offset.
+E.g. the European Union decides to abandon daylight saving time, the database on the user's system may not be updated in time when the user starts or stops a session and reports a wrong offset.
 
 By doing all time conversions and zone calculations in a central location, we can control the timezone database and guarantee correct conversions.
 For more information about the tz-database/zoneinfo on UNIX systems, see: https://www.iana.org/time-zones
@@ -61,7 +61,7 @@ For details on the setup the [docker-compose](https://github.com/fbngrm/time-tra
 ### Database
 A postgres database is used to store the time records for user sessions.
 The schema is initialized on startup by the script in the `initdb` directory.
-Four records are pre-populated on start-up as examples.
+Four records are populated on start-up as examples.
 
 ### Backend
 A golang backend service provides the API to store and fetch time records.
