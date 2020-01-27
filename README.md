@@ -68,7 +68,48 @@ A golang backend service provides the API to store and fetch time records.
 Builds of the backend service will be placed in the `/bin` directory of the time-tracker service.
 Binaries use the latest git commit hash or tag as a version.
 
-#### API Endpoints
+#### Private API Endpoints
+
+`POST /record`
+
+**Payload**
+
+```json
+{
+	"user_id": 42,
+	"name": "foobar",
+	"start_time": 1579962216,
+	"start_loc": "Europe/Berlin",
+	"stop_time": 1579965816,
+	"stop_loc": "Europe/Copenhagen",
+	"duration": 3600
+}```
+
+**Response**
+
+```json
+{
+	"record_id": 9,
+	"user_id": 42,
+	"name": "foobar",
+	"start_time": "25 Jan 2020 15:23:36",
+	"start_loc": "Europe/Berlin",
+	"stop_time": "25 Jan 2020 16:23:36",
+	"stop_loc": "Europe/Copenhagen",
+	"duration": "01:00:00"
+}```
+
+**Role:**
+
+Persist a time record of a user session in the database.
+
+**Behaviour**
+
+The provided timestamps and timezones are used to get the start and stop times in the provided locations.
+The time record is stored in the datastore which returns the records ID.
+A JSON representation of record is with the generated ID and formatted times and duration is returned.
+
+---
 
 `GET /records?user_id=42&tz=Europe/Berlin&ts=1579688104&period=week`
 
@@ -81,7 +122,7 @@ Binaries use the latest git commit hash or tag as a version.
 
 **Response**
 ```json
-{
+[{
 	"record_id": 5,
 	"user_id": 42,
 	"name": "hello world",
@@ -90,7 +131,7 @@ Binaries use the latest git commit hash or tag as a version.
 	"stop_time": "27 Jan 2020 00:13:40",
 	"stop_loc": "Europe/Berlin",
 	"duration": "00:00:12"
-}
+}]
 ```
 
 **Role:**
@@ -99,25 +140,37 @@ Fetch a list of records for a certain user for the current day, week or month.
 
 **Behaviour**
 
-The provided timestamp and timezone are used to convert the time in the users location.
-The start of the first day for the provided period is calculated as the start time.
-A list of all time records with a stop date past the start time is returned.
+The provided timestamp and timezone are used to get the time in the users location.
+The start of the first day for the provided period in the provided location is calculated as the start date.
+A list of JSON representations of all time records with a stop date past the start date is returned.
 
 ---
 
-`GET /drivers/:id`
-
-**Response**
-
-
 ### Frontend
-Builds of the frontend are created during the build of the gateway service.
-
+A react/redux frontend provides the user interface to store and view time records.
+Builds of the frontend are created during the build of the gateway service and are served as static files.
 
 ### Gatweay
+An nginx gateway is responsible for servig the frontend as well as providing public API enpoints.
+Requests to the public enpoints are forwarded to the backend service.
+
+#### Public API Endpoints
+
+`POST /time-tracker/record`
+
+Forwarded to the private `/record` endpoint.
+
+---
+
+`GET /time-tracker/records`
+
+Forwarded to the private `/records` endpoint.
+
+---
 
 ## Dependency management
 The program makes use of the standard library wherever possible.
 For handling dependencies, go modules are used.
 This requires to have a go version > 1.11 installed and setting `GO111MODULE=1`.
 If the go version is >= 1.13, modules are enabled by default.
+
