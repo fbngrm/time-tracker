@@ -19,7 +19,7 @@ By doing all time conversions and zone calculations in a central location, we ca
 For more information about the tz-database/zoneinfo on UNIX systems, see: https://www.iana.org/time-zones
 
 Theoretically, it was also possible to store future dates in a safe way without being affected by future, yet unknown, changes in timezone conversion rules.
-Against the widespread believe that it is true to store dates in UTC format to be a bulletproof method, this is not true for storing future dates.
+Against the widespread believe that it is safe to store dates in UTC format to be a bulletproof method, this is not true for storing future dates.
 
 ### Setup
 This section assumes there is a go, make, Docker and git installation available on the system.
@@ -77,9 +77,9 @@ Binaries use the latest git commit hash or tag as a version.
 ```json
 {
 	"user_id": 42,
-	"name": "foobar",
+	"name": "eat pølser",
 	"start_time": 1579962216,
-	"start_loc": "Europe/Berlin",
+	"start_loc": "Europe/Copenhagen",
 	"stop_time": 1579965816,
 	"stop_loc": "Europe/Copenhagen",
 	"duration": 3600
@@ -92,9 +92,9 @@ Binaries use the latest git commit hash or tag as a version.
 {
 	"record_id": 9,
 	"user_id": 42,
-	"name": "foobar",
+	"name": "eat pølser",
 	"start_time": "25 Jan 2020 15:23:36",
-	"start_loc": "Europe/Berlin",
+	"start_loc": "Europe/Copenhagen",
 	"stop_time": "25 Jan 2020 16:23:36",
 	"stop_loc": "Europe/Copenhagen",
 	"duration": "01:00:00"
@@ -109,7 +109,7 @@ Persist a time record of a user session in the database.
 
 The provided timestamps and timezones are used to get the start and stop times in the provided locations.
 The time record is stored in the datastore which returns the records ID.
-A JSON representation of record is with the generated ID and formatted times and duration is returned.
+A JSON representation of record with the generated ID and formatted times and duration is returned.
 
 ---
 
