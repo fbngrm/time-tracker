@@ -152,14 +152,14 @@ var getRecordTests = map[uint64]struct {
 		d: "expect store error to result in 500",
 		e: errInternal,
 		s: http.StatusInternalServerError,
-		p: params{u: "3", ts: "0"}, // timzone and location can be empty
+		p: params{u: "3", ts: "0"}, // timezone and location can be empty
 		b: []byte(fmt.Sprintf(`{"error":"%s"}`, errInternal.Error())),
 	},
 	// success
 	4: { // 200
-		d: "expect successfull request",
+		d: "expect successful request",
 		s: http.StatusOK,
-		p: params{u: "1", ts: "0"}, // timzone and location can be empty
+		p: params{u: "1", ts: "0"}, // timezone and location can be empty
 		r: make([]store.TimeRecord, 1),
 	},
 }
