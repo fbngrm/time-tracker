@@ -100,7 +100,7 @@ Binaries use the latest git commit hash or tag as a version.
 }
 ```
 
-**Role:**
+**Role**
 
 Persist a time record of a user session in the database.
 
@@ -135,7 +135,7 @@ A JSON representation of the record with the generated ID and formatted times an
 }, ...]
 ```
 
-**Role:**
+**Role**
 
 Fetch a list of records for a certain user for the current day, week or month.
 
