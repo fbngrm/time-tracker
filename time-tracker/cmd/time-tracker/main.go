@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	version = "unkown" // version is build into the binary, see Makefile
+	version = "unkown" // version gets built into the binary, see Makefile
 
 	// provide the configuration via env parameters or arguments
 	httpAddr      = kingpin.Flag("http-addr", "address of HTTP server").Envar("HTTP_ADDR").Required().String()
