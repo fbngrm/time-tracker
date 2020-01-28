@@ -64,7 +64,7 @@ Four records are populated on start-up as examples.
 
 ### Backend
 A golang backend service provides the API to store and fetch time records.
-Builds of the backend service will be placed in the `/bin` directory of the time-tracker service.
+Builts of the backend service will be placed in the `/bin` directory of the time-tracker service.
 Binaries use the latest git commit hash or tag as a version.
 
 #### Private API Endpoints
