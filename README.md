@@ -178,5 +178,5 @@ If the go version is >= 1.13, modules are enabled by default.
 ## Issues
 Time timer displayed in the frontend is not accurate when stopped and continued multiple times.
 The time tracked and send to the backend is accurate though.
-This is just affects user experience/visualization and is not a data accuracy issue.
+This just affects user experience/visualization and is not a data accuracy issue.
 Still, this needed to be fixed in a future iteration.
