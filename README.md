@@ -31,7 +31,7 @@ make build # builds all services
 ```
 
 ### Run
-Serve the frontend on `localhost`:
+Serve the frontend, open a browser and navigate to `localhost` after all services have started.
 ```
 make build
 make run # starts all services
@@ -54,8 +54,7 @@ make lint
 ```
 
 ## Architecture
-The program consists of three services.
-Services run in a Docker container, exposed by a gateway service which is reachable from the outside world.
+The program consists of three services running in a Docker container, exposed by a gateway which is reachable from the outside world.
 For details on the setup the [docker-compose](https://github.com/fbngrm/time-tracker/blob/master/docker-compose.yaml) file.
 
 ### Database
@@ -176,3 +175,8 @@ For handling dependencies, go modules are used.
 This requires to have a go version > 1.11 installed and setting `GO111MODULE=1`.
 If the go version is >= 1.13, modules are enabled by default.
 
+## Issues
+Time timer displayed in the frontend is not accurate when stopped and continued multiple times.
+The time tracked and send to the backend is accurate though.
+This is just affects user experience/visualization and is not a data accuracy issue.
+Still, this needed to be fixed in a future iteration.
